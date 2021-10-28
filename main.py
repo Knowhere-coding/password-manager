@@ -16,15 +16,15 @@ status, masterUsername, masterPassword = initialization()
 
 # input master username/password
 # for IDE usage:
-#if not status:
-#    masterUsername = input("Please enter the master username: ")
-#    masterPassword = input("Please enter the master password: ")
+if not status:
+    masterUsername = input("Please enter the master username: ")
+    masterPassword = input("Please enter the master password: ")
 
 # for terminal usage:
 # TODO: position indicator while typing a password/username - ✓
-if not status:
-    masterUsername = pwinput.pwinput(prompt="Please enter the master username: ")
-    masterPassword = pwinput.pwinput(prompt="Please enter the master password: ")
+#if not status:
+#    masterUsername = pwinput.pwinput(prompt="Please enter the master username: ")
+#    masterPassword = pwinput.pwinput(prompt="Please enter the master password: ")
 
 AES_key = AESkey(masterPassword)
 

@@ -45,6 +45,17 @@ def writeCsvData(fileName, rows, case, AES_key):
     encryptFile(fileName, AES_key)
 
 
+# check if the database has entries
+def databaseStatus(AES_key):
+    if len(readCsvData("data/account_data.csv", AES_key)) == 1:
+        print("")
+        print("No data found!")
+        print("")
+        return False
+    else:
+        return True
+
+
 def checkMaster(masterUsername, masterPassword, AES_key):
     #AES_key = AESkey(masterPassword)
     masterPassword = sha512(masterPassword)
@@ -137,16 +148,13 @@ def findData(searchingField, searchingValue, AES_key, output=None):
     indices = []
     outputRow2 = []
 
-    for row in readCsvDataDict("data/account_data.csv", AES_key):
-        if row[searchingField].lower() == searchingValue.lower():
-            results.append(row)
-
-    if not results:
-        print("")
-        print("No data found!")
-        print("")
+    if not databaseStatus(AES_key):
         return [], []
     else:
+        for row in readCsvDataDict("data/account_data.csv", AES_key):
+            if row[searchingField].lower() == searchingValue.lower():
+                results.append(row)
+
         for row in results:
             outputRow = []
             indices.append(row["ID"])
@@ -185,9 +193,10 @@ def showDatabase(AES_key, sortedBy=1):
     database.field_names = ["ID", "siteName", "url", "username", "email", "password", "changeDate", "category"]
     entries = []
 
-    for row in readCsvData("data/account_data.csv", AES_key)[1:]:
-        entries.append(row)
-    entries.sort(key=lambda entries: entries[sortedBy])
-    for entry in entries:
-        database.add_row(entry)
-    print(database)
+    if databaseStatus(AES_key):
+        for row in readCsvData("data/account_data.csv", AES_key)[1:]:
+            entries.append(row)
+        entries.sort(key=lambda entries: entries[sortedBy])
+        for entry in entries:
+            database.add_row(entry)
+        print(database)
