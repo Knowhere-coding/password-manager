@@ -12,7 +12,6 @@ init()
 # TODO: UI design
 # TODO: colors
 # TODO: Delete terminal text (maybe not possible?)
-# TODO: let the user choose the password reset timer
 
 
 # default overlay
@@ -26,7 +25,7 @@ def optionMenu():
     print("5 - Show all your {}".format(colored("accounts", "red")))
     print("Q - {}".format(colored("Exit", "red")))
     print('-' * 30)
-    return input(": ")
+    return input("> ")
 
 
 # copy data to clipboard
@@ -44,8 +43,8 @@ def copyToClipboard(msg):
 # open url
 def openUrl(url):
     # open url
-    print("Do you want to open the url? (Y/N):")
-    choice = input()
+    print("Do you want to open the {}? (Y/N):".format(colored("url", "blue")))
+    choice = input("> ")
     status = True if choice.upper() == "Y" else False
 
     if status:
@@ -55,14 +54,14 @@ def openUrl(url):
 # create/change password
 def passwordOption():
     # option to generate random password
-    print("Do you want to generate a random password? (Y/N):")
-    choice = input()
+    print("Do you want to generate a random {}? (Y/N):".format(colored("password", "red")))
+    choice = input("> ")
     status = True if choice.upper() == "Y" else False
 
     # generate random password
     if status:
-        print("Please specify the given special characters besides all letters and digits (if none type -):")
-        specialChars = input()
+        print("Please specify the given {} besides all letters and digits (if none type -):".format(colored("specail characters", "red")))
+        specialChars = input("> ")
         if specialChars == "-":
             password = createNewPassword()
         else:
@@ -70,18 +69,9 @@ def passwordOption():
     # provide own password
     else:
         print("Please provide your own {}:".format(colored("password", "red")))
-        password = input()
+        password = input("> ")
 
-    # expiration Option
-    print("Do you want to define an expiration period for your password? (Y/N):")
-    choice = input(": ")
-    status2 = True if choice.upper() == "Y" else False
-
-    if status2:
-        expiration = expirationOption()
-        return password, expiration
-
-    return password, 0
+    return password
 
 
 # expiration option
@@ -101,9 +91,9 @@ def expirationOption():
     print("4 - {}".format(colored("quarterly", "white")))
     print("5 - {}".format(colored("yearly", "white")))
     print("6 - {}".format(colored("never", "white")))
-    expirationNum = input(": ")
+    expirationNum = input("> ")
     while expirationNum not in ['1', '2', '3', '4', '5', '6']:
-        expirationNum = input(": ")
+        expirationNum = input("> ")
     return period[int(expirationNum)]
 
 
@@ -113,23 +103,25 @@ def categoryOption():
     categories = {1: "email",
                   2: "social media",
                   3: "gaming",
-                  4: "shopping",
-                  5: "Banking",
-                  6: "education",
-                  7: "private",
-                  8: "other"}
+                  4: "coding",
+                  5: "shopping",
+                  6: "Banking",
+                  7: "education",
+                  8: "private",
+                  9: "other"}
 
     print("1 - {}".format(colored("Email", "white")))
     print("2 - {}".format(colored("Social media", "white")))
     print("3 - {}".format(colored("Gaming", "white")))
-    print("4 - {}".format(colored("Shopping", "white")))
-    print("5 - {}".format(colored("Banking", "white")))
-    print("6 - {}".format(colored("Education", "white")))
-    print("7 - {}".format(colored("Private", "white")))
-    print("8 - {}".format(colored("Other", "white")))
-    categoryNum = input(": ")
-    while categoryNum not in ['1', '2', '3', '4', '5', '6', '7', '8']:
-        categoryNum = input(": ")
+    print("4 - {}".format(colored("Coding", "white")))
+    print("5 - {}".format(colored("Shopping", "white")))
+    print("6 - {}".format(colored("Banking", "white")))
+    print("7 - {}".format(colored("Education", "white")))
+    print("8 - {}".format(colored("Private", "white")))
+    print("9 - {}".format(colored("Other", "white")))
+    categoryNum = input("> ")
+    while categoryNum not in ['1', '2', '3', '4', '5', '6', '7', '8', '9']:
+        categoryNum = input("> ")
     return categories[int(categoryNum)]
 
 
@@ -143,35 +135,28 @@ def searchOption():
     print("4 - {}".format(colored(field_names[4], "white")))
     print("5 - {}".format(colored(field_names[5], "white")))
     print("6 - {}".format(colored(field_names[6], "white")))
-    field_nameNum = input(": ")
+    field_nameNum = input("> ")
     while field_nameNum not in ['1', '2', '3', '4', '5', '6']:
-        field_nameNum = input(": ")
+        field_nameNum = input("> ")
     return field_names[int(field_nameNum)]
 
 
-# change password
-def changePassword(ID, AES_key):
-    print("Do you want to change the password? (Y/N):")
-    choice = input()
-    status = True if choice.upper() == "Y" else False
-    if status:
-        password, expiration = passwordOption()
-        changeData(ID, "password", password, AES_key)
-        changeData(ID, "expiration", expiration, AES_key)
-        return password
-    else:
-        return ""
-
-
-# check change date
+# check change date and change password
 def checkChangeDate(ID, changeDate, expiration, AES_key):
-    if not expiration == 0:
+    if not expiration == "0":
         changeDate = datetime.strptime(changeDate, "%Y-%m-%d %H:%M:%S")
 
-        if (changeDate + timedelta(days=expiration)) < datetime.now():
-            print("{} The password-change-date is more than {} days ago {}".format(colored("!!!", "red"), str(days),
+        if (changeDate + timedelta(days=int(expiration))) < datetime.now():
+            print("{} The password-change-date is more than {} days ago {}".format(colored("!!!", "red"), expiration,
                                                                                    colored("!!!", "red")))
-            return changePassword(ID, AES_key)
+            print("Do you want to change the {}? (Y/N):".format(colored("password", "red")))
+            choice = input("> ")
+            status = True if choice.upper() == "Y" else False
+            if status:
+                password = passwordOption()
+                changeData(ID, "password", password, AES_key)
+                return password
+            return ""
         else:
             return ""
     return ""
@@ -185,24 +170,28 @@ def createAccount(AES_key):
 
     # site name
     print("Please provide the {} (e.g. reddit) you want to create a new account for:".format(colored("site name", "blue")))
-    siteName = input()
+    siteName = input("> ")
 
     # url
     print("Please provide the {} (e.g. www.example.com) to the site:".format(colored("url", "blue")))
-    url = input()
+    url = input("> ")
 
     # username
     print("Please provide a {} (if applicable):".format(colored("username", "blue")))
-    username = input()
+    username = input("> ")
     if not username:
         username = ""
 
     # email
     print("Please provide an {}:".format(colored("email", "blue")))
-    email = input()
+    email = input("> ")
 
-    # password and expiration date
-    password, expiration = passwordOption()
+    # password
+    password = passwordOption()
+
+    # expiration date
+    print("Choose the {} of your password".format(colored("expiration period", "red")))
+    expiration = expirationOption()
 
     if storeData(siteName, url, username, email, password, expiration, category, AES_key):
         copyToClipboard(password)
@@ -212,13 +201,13 @@ def createAccount(AES_key):
 def deleteAccount(AES_key):
     showDatabase(AES_key)
     print("Please provide the {} of the account you want to delete:".format(colored("ID", "red")))
-    ID = input()
+    ID = input("> ")
     siteName = ""
     for row in readCsvDataDict("data/account_data.csv", AES_key):
         if row["ID"] == ID:
             siteName = row["siteName"]
     print("Are you sure you want to {} the {} account! (Y/N):".format(colored("delete", "red"), colored(siteName, "red")))
-    choice = input()
+    choice = input("> ")
     status = True if choice.upper() == "Y" else False
 
     if status:
@@ -236,23 +225,23 @@ def findAccounts(AES_key):
         searchingValue = categoryOption()
     else:
         print("Please provide the {} you wanna search for:".format(colored(searchingField, "blue")))
-        searchingValue = input()
+        searchingValue = input("> ")
 
     results, indices = findData(searchingField, searchingValue, AES_key)
 
     if results:
         # user action
-        print("Do you want to select an account? (Y/N):")
-        choice = input()
+        print("Do you want to select an {}? (Y/N):".format(colored("account", "red")))
+        choice = input("> ")
         status = True if choice.upper() == "Y" else False
 
         if status:
             if len(results) > 1:
                 print("")
-                accountNum = input("Select the ID of your account: ")
+                accountNum = input("Select the {} of your account: ".format(colored("ID", "blue")))
 
                 while accountNum not in indices:
-                    accountNum = input("The number is not available, try again:")
+                    accountNum = input("The ID is not available, try again:")
                 index = indices.index(accountNum)
                 password = checkChangeDate(results[index]["ID"], results[index]["changeDate"], results[index]["expiration"], AES_key)
 
@@ -263,7 +252,7 @@ def findAccounts(AES_key):
 
                 openUrl(results[index]["url"])
             else:
-                print("Automatically selected Account " + results[0]["ID"] + "!")
+                print("Automatically selected Account {}!".format(colored(results[0]["ID"], "red")))
                 password = checkChangeDate(results[0]["ID"], results[0]["changeDate"], results[0]["expiration"], AES_key)
                 if password == "":
                     copyToClipboard(results[0]["password"])
@@ -276,22 +265,24 @@ def findAccounts(AES_key):
 def changeAccount(AES_key):
     showDatabase(AES_key)
     print("Please provide the {} of the account you want to change:".format(colored("ID", "red")))
-    ID = input()
+    ID = input("> ")
     print("Please select the {} you want to change:".format(colored("field name", "blue")))
     fieldName = searchOption()
 
     if fieldName == "password":
-        changeValue, expiration = passwordOption()
+        changeValue = passwordOption()
+        print("Choose the new {} for your password:".format(colored("expiration period", "red")))
+        expiration = expirationOption()
         changeData(ID, "expiration", expiration, AES_key)
     elif fieldName == "expiration":
-        print("Define the new expiration period for your password:")
+        print("Choose the new {} for your password:".format(colored("expiration period", "red")))
         changeValue = expirationOption()
     elif fieldName == "category":
         print("Choose the new {} for your account".format(colored("category", "red")))
         changeValue = categoryOption()
     else:
         print("Please provide the new {}:".format(colored(fieldName, "blue")))
-        changeValue = input()
+        changeValue = input("> ")
 
     changeData(ID, fieldName, changeValue, AES_key)
 

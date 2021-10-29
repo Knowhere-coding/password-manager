@@ -7,7 +7,6 @@ from passwordManagement import AESkey, sha512
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
 
 
-# TODO: add password reset timer
 # TODO: encryption on error
 
 # read .csv file data

@@ -11,6 +11,7 @@ def initialization():
         print("You need to setup your Passwordmanager!")
 
         # validate username
+        # regex -> 4-20 chars / mit a-zA-Z beginndend
         usernamePattern = "^[a-zA-Z]+\w{3,20}$"
         pUsername = re.compile(usernamePattern)
 
@@ -21,7 +22,7 @@ def initialization():
             masterUsername = input("Please provide a valid username (4-20 chars, starts with char): ")
 
         # validate password
-        # TODO: Password Regex - ✓
+        # regex -> min. 8 chars / min. 1x: A-Z / a-z / 0-9 / !#$%&'()*+-./:;<=>?@^_`{|}~\]\[]
         passwordPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!#$%&'()*+-./:;<=>?@^_`{|}~\]\[]).{8,}$"
         pPassword = re.compile(passwordPattern)
 
