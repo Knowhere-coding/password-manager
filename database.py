@@ -110,13 +110,13 @@ def createMasterAccountDatabase(masterUsername, masterPassword):
 # initialization - create account database .csv file
 def createAccountDatabase(AES_key):
     with open("data/account_data.csv", mode="w", newline="") as csvDataFile:
-        csv.writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "category"])
+        csv.writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"])
     encryptFile("data/account_data.csv", AES_key)
     print("Account database created")
 
 
 # option 1 - store account data in database
-def storeData(siteName, url, username, email, password, category, AES_key):
+def storeData(siteName, url, username, email, password, expiration, category, AES_key):
     status = True
     ID = 0
     rows = readCsvData("data/account_data.csv", AES_key)
@@ -127,7 +127,7 @@ def storeData(siteName, url, username, email, password, category, AES_key):
             status = False
             break
     if status:
-        rows.append([ID, siteName, url, username, email, password, re.sub("\.\d+", "", str(datetime.now())), category])
+        rows.append([ID, siteName, url, username, email, password, re.sub("\.\d+", "", str(datetime.now())), expiration, category])
         writeCsvData("data/account_data.csv", rows, "s", AES_key)
     return status
 
@@ -146,7 +146,7 @@ def deleteData(ID, AES_key):
 # option 3 - search account data from database
 def findData(searchingField, searchingValue, AES_key, output=None):
     if output is None:
-        output = ["ID", "siteName", "url", "username", "email", "password", "changeDate", "category"]
+        output = ["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"]
     accountData = PrettyTable()
     accountData.field_names = output
     results = []
@@ -193,7 +193,7 @@ def changeData(ID, fieldName, changeValue, AES_key):
 # option 5 - show all database entries sorted
 def showDatabase(AES_key, sortedBy=1):
     database = PrettyTable()
-    database.field_names = ["ID", "siteName", "url", "username", "email", "password", "changeDate", "category"]
+    database.field_names = ["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"]
     entries = []
 
     if databaseStatus(AES_key):
