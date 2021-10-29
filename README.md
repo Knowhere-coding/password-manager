@@ -1,4 +1,4 @@
 # Password Manager
 This is a simple terminal based password manager.
 
-![password_manager](https://user-images.githubusercontent.com/92861465/139447748-eab7482f-8dd4-44ae-b598-0577f49e0dbf.PNG)
+![password_manager](https://user-images.githubusercontent.com/92861465/139448780-51bd3d86-fc07-44c3-90df-fd570b60b120.PNG)
