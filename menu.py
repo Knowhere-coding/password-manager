@@ -77,16 +77,17 @@ def passwordOption():
 # category option
 def categoryOption():
     # category
-    categories = {1: "email", 2: "social media", 3: "gaming", 4: "shopping", 5: "education", 6: "private", 7: "other"}
+    categories = {1: "email", 2: "social media", 3: "gaming", 4: "shopping", 5: "Banking", 6: "education", 7: "private", 8: "other"}
     print("1 - {}".format(colored("Email", "white")))
     print("2 - {}".format(colored("Social media", "white")))
     print("3 - {}".format(colored("Gaming", "white")))
     print("4 - {}".format(colored("Shopping", "white")))
-    print("5 - {}".format(colored("Education", "white")))
-    print("6 - {}".format(colored("Private", "white")))
-    print("7 - {}".format(colored("Other", "white")))
+    print("5 - {}".format(colored("Banking", "white")))
+    print("6 - {}".format(colored("Education", "white")))
+    print("7 - {}".format(colored("Private", "white")))
+    print("8 - {}".format(colored("Other", "white")))
     categoryNum = input(": ")
-    while categoryNum not in ['1', '2', '3', '4', '5', '6', '7']:
+    while categoryNum not in ['1', '2', '3', '4', '5', '6', '7', '8']:
         categoryNum = input(": ")
     return categories[int(categoryNum)]
 
@@ -204,7 +205,7 @@ def findAccounts(AES_key):
         if status:
             if len(results) > 1:
                 print("")
-                accountNum = input("Select your account number: ")
+                accountNum = input("Select the ID of your account: ")
 
                 while accountNum not in indices:
                     accountNum = input("The number is not available, try again:")

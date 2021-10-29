@@ -8,7 +8,7 @@ from fileEncryption import encryptFile, decryptFile, saveDecryptFile
 
 
 # TODO: add password reset timer
-# TODO: implementing unique ID (while changing/deleting data)
+# TODO: encryption on error
 
 # read .csv file data
 def readCsvData(fileName, AES_key):
@@ -116,10 +116,9 @@ def createAccountDatabase(AES_key):
 
 
 # option 1 - store account data in database
-# TODO: add password reset timer
 def storeData(siteName, url, username, email, password, category, AES_key):
     status = True
-    ID = 00
+    ID = 0
     rows = readCsvData("data/account_data.csv", AES_key)
 
     for ID, row in enumerate(rows, 0):
@@ -139,6 +138,8 @@ def deleteData(ID, AES_key):
     for row in rows:
         if row[0] == ID:
             rows.remove(row)
+    for i, row in enumerate(rows[1:], 0):
+        row[0] = str(i)
     writeCsvData("data/account_data.csv", rows, "d", AES_key)
 
 
