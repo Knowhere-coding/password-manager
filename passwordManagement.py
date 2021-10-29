@@ -37,11 +37,11 @@ def createNewPassword(specialChars="!#$%&'()*+-./:;<=>?@[]^_`{|}~"):
 # primes, odds, evens = 0, 0, 0
 #
 # for x in range(100):
-#    if isprime(x):
+#    if isprime(x):     # 25%
 #        primes += 1
-#    elif x%2==1:
+#    elif x%2==1:       # 26%
 #        odds += 1
-#    elif x%2==0:
+#    elif x%2==0:       # 49%
 #        evens += 1
 #
 # print("Special characters: {}%\nDigits: {}%\nLetters: {}%\nSum: {}%".format(primes, odds, evens, (primes+odds+evens)))

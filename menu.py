@@ -11,18 +11,18 @@ init()
 
 # TODO: UI design
 # TODO: colors
-# TODO: Delete terminal text (maybe not possible?) - x
+# TODO: Delete terminal text (maybe not possible?)
+# TODO: let the user choose the password reset timer
 
 
 # default overlay
-# TODO: new default overlay - ✓
 def optionMenu():
     print('-'*30)
     print(('-'*12) + " Menu " + ('-'*12))
     print("1 - Create a new {}".format(colored("account", "red")))
     print("2 - Delete an {}".format(colored("account", "red")))
     print("3 - Find your {}".format(colored("account data", "red")))
-    print("4 - Change your {} (!!!work in progress!!!)".format(colored("account data", "red")))
+    print("4 - Change your {}".format(colored("account data", "red")))
     print("5 - Show all your {}".format(colored("accounts", "red")))
     print("Q - {}".format(colored("Exit", "red")))
     print('-' * 30)
@@ -30,7 +30,7 @@ def optionMenu():
 
 
 # copy data to clipboard
-# TODO: Delete Clipboard after X sec. - x
+# TODO: Delete Clipboard after X sec.
 def copyToClipboard(msg):
     dataFrame = pd.DataFrame([msg])
     dataFrame.to_clipboard(index=False, header=False)
@@ -228,8 +228,8 @@ def findAccounts(AES_key):
 
 
 # option 4 - change account data
-# TODO: change account data
 def changeAccount(AES_key):
+    showDatabase(AES_key)
     print("Please provide the {} of the account you want to change:".format(colored("ID", "red")))
     ID = input()
     print("Please select the {} you want to change:".format(colored("field name", "blue")))

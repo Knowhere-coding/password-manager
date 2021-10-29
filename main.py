@@ -7,6 +7,8 @@ from database import checkMaster
 from initialization import initialization
 from passwordManagement import AESkey
 
+# TODO: implementing "closing on inactivity"
+
 tprint("---------------")
 tprint("Passwordmanager")
 tprint("---------------")
@@ -21,7 +23,6 @@ if not status:
     masterPassword = input("Please enter the master password: ")
 
 # for terminal usage:
-# TODO: position indicator while typing a password/username - ✓
 #if not status:
 #    masterUsername = pwinput.pwinput(prompt="Please enter the master username: ")
 #    masterPassword = pwinput.pwinput(prompt="Please enter the master password: ")
@@ -52,7 +53,7 @@ while True:
         findAccounts(AES_key)
     elif option == "4":
         option = ""
-        #changeAccount(AES_key) # TODO: change account data
+        changeAccount(AES_key)
     elif option == "5":
         option = ""
         showAllAccounts(AES_key)

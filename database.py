@@ -7,6 +7,9 @@ from passwordManagement import AESkey, sha512
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
 
 
+# TODO: add password reset timer
+# TODO: implementing unique ID (while changing/deleting data)
+
 # read .csv file data
 def readCsvData(fileName, AES_key):
     rows = []
@@ -113,6 +116,7 @@ def createAccountDatabase(AES_key):
 
 
 # option 1 - store account data in database
+# TODO: add password reset timer
 def storeData(siteName, url, username, email, password, category, AES_key):
     status = True
     ID = 00
@@ -171,19 +175,17 @@ def findData(searchingField, searchingValue, AES_key, output=None):
 
 
 # option 4 - change account data
-# TODO: change account data
 def changeData(ID, fieldName, changeValue, AES_key):
     rows = readCsvDataDict("data/account_data.csv", AES_key)
-    newRows = []
+    newRows = [rows[0].keys()]
     for row in rows:
-        if row["ID"] == ID:
+        if row["ID"] == str(ID):
             if fieldName.lower() == "password":
                 row[fieldName] = changeValue
                 row["changeDate"] = re.sub("\.\d+", "", str(datetime.now()))
             else:
                 row[fieldName] = changeValue
         newRows.append(list(row.values()))
-    print(newRows)
     writeCsvData("data/account_data.csv", newRows, "s", AES_key)
 
 
