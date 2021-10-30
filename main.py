@@ -7,8 +7,6 @@ from database import checkMaster
 from initialization import initialization
 from passwordManagement import AESkey
 
-# TODO: implementing "closing on inactivity"
-# TODO: open the terminal with a fixed width and height
 
 tprint("---------------")
 tprint("Passwordmanager")
@@ -19,46 +17,58 @@ status, masterUsername, masterPassword = initialization()
 
 # input master username/password
 # for IDE usage:
-if not status:
-    masterUsername = input("Please enter the master username: ")
-    masterPassword = input("Please enter the master password: ")
+# if not status:
+#    masterUsername = input("Please enter the master username: ")
+#    masterPassword = input("Please enter the master password: ")
 
 # for terminal usage:
-#if not status:
-#    masterUsername = pwinput.pwinput(prompt="Please enter the master username: ")
-#    masterPassword = pwinput.pwinput(prompt="Please enter the master password: ")
+if not status:
+    masterUsername = pwinput.pwinput(prompt=" Please enter the master username: ")
+    masterPassword = pwinput.pwinput(prompt=" Please enter the master password: ")
 
 AES_key = AESkey(masterPassword)
 
 # check login
 if checkMaster(masterUsername, masterPassword, AES_key):
-    print("You're in!")
+    print(" You're in!")
 else:
-    print("Wrong master username or password!")
+    print(" Wrong master username or password!")
     time.sleep(10)
     sys.exit()
 
 # default overlay
-option = optionMenu()
+option, start = optionMenu()
 
 # handle options
 while True:
-    if option == "1":
+    # stop inactivity timer
+    stop = time.time()
+
+    if stop - start > 60:  # inactivity time in sec.
+        print("You have been logged out due to inactivity!")
+        time.sleep(10)
+        sys.exit()
+    elif option == "1":
         option = ""
         createAccount(AES_key)
+        start = time.time()
     elif option == "2":
         option = ""
         deleteAccount(AES_key)
+        start = time.time()
     elif option == "3":
         option = ""
         findAccounts(AES_key)
+        start = time.time()
     elif option == "4":
         option = ""
         changeAccount(AES_key)
+        start = time.time()
     elif option == "5":
         option = ""
         showAllAccounts(AES_key)
+        start = time.time()
     elif option == "Q" or option == "q":
         sys.exit()
     else:
-        option = optionMenu()
+        option, start = optionMenu()

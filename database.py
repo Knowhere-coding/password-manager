@@ -41,9 +41,9 @@ def writeCsvData(fileName, rows, case, AES_key):
         for row in rows:
             csvWriter.writerow(row)
         if case == "d":
-            print("Account deleted!")
+            print(" Account deleted!")
         elif case == "s":
-            print("All data stored!")
+            print(" All data stored!")
     encryptFile(fileName, AES_key)
 
 
@@ -51,7 +51,7 @@ def writeCsvData(fileName, rows, case, AES_key):
 def databaseStatus(AES_key):
     if len(readCsvData("data/account_data.csv", AES_key)) == 1:
         print("")
-        print("The database is empty!")
+        print(" The database is empty!")
         print("")
         return False
     else:
@@ -103,7 +103,7 @@ def createMasterAccountDatabase(masterUsername, masterPassword):
         file.write(AES_key)
     encryptFile("data/AES_key.txt", AES_key)
 
-    print("All master data stored!")
+    print(" All master data stored!")
     createAccountDatabase(AES_key)
 
 
@@ -112,7 +112,7 @@ def createAccountDatabase(AES_key):
     with open("data/account_data.csv", mode="w", newline="") as csvDataFile:
         csv.writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"])
     encryptFile("data/account_data.csv", AES_key)
-    print("Account database created")
+    print(" Account database created!")
 
 
 # option 1 - store account data in database
@@ -122,8 +122,8 @@ def storeData(siteName, url, username, email, password, expiration, category, AE
     rows = readCsvData("data/account_data.csv", AES_key)
 
     for ID, row in enumerate(rows, 0):
-        if row[1:-3] == [siteName, url, username, email]:
-            print("The account already exists")
+        if row[1:5] == [siteName, url, username, email]:
+            print(" The account already exists!")
             status = False
             break
     if status:
@@ -156,20 +156,24 @@ def findData(searchingField, searchingValue, AES_key, output=None):
     for row in readCsvDataDict("data/account_data.csv", AES_key):
         if row[searchingField].lower() == searchingValue.lower():
             results.append(row)
-
-    for row in results:
-        outputRow = []
-        indices.append(row["ID"])
-        for element in output:
-            outputRow.append(row[element])
-        outputRow2.append(outputRow)
-    outputRow2.sort(key=lambda row: row[1])
-    for row in outputRow2:
-        accountData.add_row(row)
-    print("")
-    print("Results for: " + searchingValue)
-    print(accountData)
-    return results, indices
+    if results:
+        for row in results:
+            outputRow = []
+            indices.append(row["ID"])
+            for element in output:
+                outputRow.append(row[element])
+            outputRow2.append(outputRow)
+        outputRow2.sort(key=lambda row: row[1])
+        for row in outputRow2:
+            row[5] = "*"*len(row[5])
+            accountData.add_row(row)
+        print("")
+        print(" Results for: " + searchingValue)
+        print(accountData)
+        return results, indices
+    else:
+        print(" No results for: " + searchingValue)
+        return [], []
 
 
 # option 4 - change account data
@@ -194,6 +198,7 @@ def showDatabase(AES_key, sortedBy=1):
     entries = []
 
     for row in readCsvData("data/account_data.csv", AES_key)[1:]:
+        row[5] = "*"*len(row[5])
         entries.append(row)
     entries.sort(key=lambda entries: entries[sortedBy])
     for entry in entries:
