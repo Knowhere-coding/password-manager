@@ -8,6 +8,7 @@ from initialization import initialization
 from passwordManagement import AESkey
 
 # TODO: implementing "closing on inactivity"
+# TODO: open the terminal with a fixed width and height
 
 tprint("---------------")
 tprint("Passwordmanager")

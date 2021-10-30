@@ -51,13 +51,14 @@ def writeCsvData(fileName, rows, case, AES_key):
 def databaseStatus(AES_key):
     if len(readCsvData("data/account_data.csv", AES_key)) == 1:
         print("")
-        print("No data found!")
+        print("The database is empty!")
         print("")
         return False
     else:
         return True
 
 
+# validate the master account data
 def checkMaster(masterUsername, masterPassword, AES_key):
     #AES_key = AESkey(masterPassword)
     masterPassword = sha512(masterPassword)
@@ -152,26 +153,23 @@ def findData(searchingField, searchingValue, AES_key, output=None):
     indices = []
     outputRow2 = []
 
-    if not databaseStatus(AES_key):
-        return [], []
-    else:
-        for row in readCsvDataDict("data/account_data.csv", AES_key):
-            if row[searchingField].lower() == searchingValue.lower():
-                results.append(row)
+    for row in readCsvDataDict("data/account_data.csv", AES_key):
+        if row[searchingField].lower() == searchingValue.lower():
+            results.append(row)
 
-        for row in results:
-            outputRow = []
-            indices.append(row["ID"])
-            for element in output:
-                outputRow.append(row[element])
-            outputRow2.append(outputRow)
-        outputRow2.sort(key=lambda row: row[1])
-        for row in outputRow2:
-            accountData.add_row(row)
-        print("")
-        print("Results for: " + searchingValue)
-        print(accountData)
-        return results, indices
+    for row in results:
+        outputRow = []
+        indices.append(row["ID"])
+        for element in output:
+            outputRow.append(row[element])
+        outputRow2.append(outputRow)
+    outputRow2.sort(key=lambda row: row[1])
+    for row in outputRow2:
+        accountData.add_row(row)
+    print("")
+    print("Results for: " + searchingValue)
+    print(accountData)
+    return results, indices
 
 
 # option 4 - change account data
@@ -195,10 +193,9 @@ def showDatabase(AES_key, sortedBy=1):
     database.field_names = ["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"]
     entries = []
 
-    if databaseStatus(AES_key):
-        for row in readCsvData("data/account_data.csv", AES_key)[1:]:
-            entries.append(row)
-        entries.sort(key=lambda entries: entries[sortedBy])
-        for entry in entries:
-            database.add_row(entry)
-        print(database)
+    for row in readCsvData("data/account_data.csv", AES_key)[1:]:
+        entries.append(row)
+    entries.sort(key=lambda entries: entries[sortedBy])
+    for entry in entries:
+        database.add_row(entry)
+    print(database)
