@@ -1,5 +1,5 @@
-import pandas as pd
 import pwinput
+import pyperclip
 import time
 from datetime import datetime, timedelta
 from colorama import init
@@ -35,8 +35,7 @@ def optionMenu():
 # copy data to clipboard
 # TODO: Delete Clipboard after X sec.
 def copyToClipboard(msg):
-    dataFrame = pd.DataFrame([msg])
-    dataFrame.to_clipboard(index=False, header=False)
+    pyperclip.copy(msg)
     print('-' * 47)
     print("")
     print(" Your {} has been copied to your {}".format(colored("password", "green"), colored("clipboard", "cyan")))

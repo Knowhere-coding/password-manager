@@ -1,6 +1,7 @@
 import sys
 from art import *
 import pwinput
+import pyperclip
 import time
 from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts
 from database import checkMaster
@@ -17,7 +18,7 @@ status, masterUsername, masterPassword = initialization()
 
 # input master username/password
 # for IDE usage:
-# if not status:
+#if not status:
 #    masterUsername = input("Please enter the master username: ")
 #    masterPassword = input("Please enter the master password: ")
 
@@ -45,30 +46,38 @@ while True:
     stop = time.time()
 
     if stop - start > 60:  # inactivity time in sec.
+        pyperclip.copy("")  # clear clipboard
         print("You have been logged out due to inactivity!")
         time.sleep(10)
         sys.exit()
     elif option == "1":
         option = ""
+        pyperclip.copy("")  # clear clipboard
         createAccount(AES_key)
         start = time.time()
     elif option == "2":
         option = ""
+        pyperclip.copy("")  # clear clipboard
         deleteAccount(AES_key)
         start = time.time()
     elif option == "3":
         option = ""
+        pyperclip.copy("")  # clear clipboard
         findAccounts(AES_key)
         start = time.time()
     elif option == "4":
         option = ""
+        pyperclip.copy("")  # clear clipboard
         changeAccount(AES_key)
         start = time.time()
     elif option == "5":
         option = ""
+        pyperclip.copy("")  # clear clipboard
         showAllAccounts(AES_key)
         start = time.time()
     elif option == "Q" or option == "q":
+        pyperclip.copy("")  # clear clipboard
         sys.exit()
     else:
+        pyperclip.copy("")  # clear clipboard
         option, start = optionMenu()
