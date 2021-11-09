@@ -2,6 +2,9 @@ import os
 import re
 from database import createMasterAccountDatabase
 
+# TODO: environment variables
+# TODO: let the user specify the backup directory
+
 
 # initialization (create Username/Password), build directories
 def initialization():

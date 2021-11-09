@@ -1,12 +1,14 @@
 import pwinput
 import pyperclip
 import time
+import os
 from datetime import datetime, timedelta
 from colorama import init
 from termcolor import colored
 import webbrowser
 from passwordManagement import createNewPassword
-from database import readCsvDataDict, storeData, deleteData, findData, changeData, showDatabase, databaseStatus
+from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup
+from fileHandling import readCsvDataDict
 
 # initialize termcolor to work on windows
 init()
@@ -27,6 +29,7 @@ def optionMenu():
     print(" 3 - Find your {}".format(colored("account data", "cyan")))
     print(" 4 - Change your {}".format(colored("account data", "cyan")))
     print(" 5 - Show all your {}".format(colored("accounts", "cyan")))
+    print(" 6 - Make {}".format(colored("backup", "cyan")))
     print(" Q - {}".format(colored("Exit", "cyan")))
     print('-' * 30)
     return input(" > "), start
@@ -304,3 +307,16 @@ def changeAccount(AES_key):
 def showAllAccounts(AES_key):
     if databaseStatus(AES_key):
         showDatabase(AES_key)
+
+
+# option 6 - make backup
+def makeBackup():
+    print("Please specify the destination path you want to save the backup to:")
+    dst_path = input(" > ")
+    status = backup(dst_path)
+    if status:
+        print("The backup was saved!")
+        os.startfile(dst_path)
+    else:
+        print("The given destination path is not accessable, please specify a different path!")
+        #makeBackup()
