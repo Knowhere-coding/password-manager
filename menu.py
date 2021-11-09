@@ -319,4 +319,4 @@ def makeBackup():
         os.startfile(dst_path)
     else:
         print("The given destination path is not accessable, please specify a different path!")
-        #makeBackup()
+        makeBackup()
