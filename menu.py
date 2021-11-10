@@ -14,7 +14,6 @@ from fileHandling import readCsvDataDict
 init()
 
 # TODO: Delete terminal text (maybe not possible?)
-# TODO: password barrier when changing/deleting data
 
 
 # default overlay
@@ -35,6 +34,12 @@ def optionMenu():
     return input(" > "), start
 
 
+# give the user a choice
+def choicePrompt():
+    choice = input(" > ")
+    return True if choice.upper() == "Y" else False
+
+
 # copy data to clipboard
 # TODO: Delete Clipboard after X sec.
 def copyToClipboard(msg):
@@ -50,22 +55,20 @@ def copyToClipboard(msg):
 def openUrl(url):
     # open url
     print(" Do you want to open the {}? (Y/N):".format(colored("url", "green")))
-    choice = input(" > ")
-    status = True if choice.upper() == "Y" else False
+    choice = choicePrompt()
 
-    if status:
-        webbrowser.open_new_tab(url)
+    if choice:
+        webbrowser.open_new_tab("https://" + url)
 
 
 # create/change password
 def passwordOption():
     # option to generate random password
     print(" Do you want to generate a random {}? (Y/N):".format(colored("password", "green")))
-    choice = input(" > ")
-    status = True if choice.upper() == "Y" else False
+    choice = choicePrompt()
 
     # generate random password
-    if status:
+    if choice:
         print(" Please specify the given {} besides all letters and digits (if none type -):".format(colored("specail characters", "green")))
         specialChars = input(" > ")
         if specialChars == "-":
@@ -157,9 +160,8 @@ def checkChangeDate(ID, changeDate, expiration, AES_key):
             print(" {} The password-change-date is more than {} days ago {}".format(colored("!!!", "cyan"), expiration,
                                                                                    colored("!!!", "cyan")))
             print(" Do you want to change the {}? (Y/N):".format(colored("password", "green")))
-            choice = input(" > ")
-            status = True if choice.upper() == "Y" else False
-            if status:
+            choice = choicePrompt()
+            if choice:
                 password = passwordOption()
                 changeData(ID, "password", password, AES_key)
                 return password
@@ -222,10 +224,9 @@ def deleteAccount(AES_key):
             if row["ID"] == ID:
                 siteName = row["siteName"]
         print(" Are you sure you want to {} the {} account! (Y/N):".format(colored("delete", "red"), colored(siteName, "green")))
-        choice = input(" > ")
-        status = True if choice.upper() == "Y" else False
+        choice = choice = choicePrompt()
 
-        if status:
+        if choice:
             pwdBarrier = passwordBarrier(AES_key)
             if pwdBarrier:
                 deleteData(ID, AES_key)
@@ -236,6 +237,8 @@ def deleteAccount(AES_key):
 # option 3 - find account data
 def findAccounts(AES_key):
     # field name
+    output = None
+
     if databaseStatus(AES_key):
         print(" Please select the {} you want to search for:".format(colored("field name", "green")))
         searchingField = searchOption()
@@ -245,23 +248,25 @@ def findAccounts(AES_key):
             searchingValue = categoryOption()
         elif searchingField == "expiration":
             print(" Choose the {} you want to search for:".format(colored("expiration period", "green")))
-            searchingValue = expirationOption()
+            searchingValue = str(expirationOption())
+            output = ["ID", "siteName", "username", "email", "password", "expiration", "category"]
         elif searchingField == "password":
             print(" Please provide the {} you wanna search for:".format(colored(searchingField, "green")))
             searchingValue = pwinput.pwinput(prompt=" > ")
         else:
+            if searchingField == "url":
+                output = ["ID", "siteName", "url", "username", "email", "password", "category"]
             print(" Please provide the {} you wanna search for:".format(colored(searchingField, "green")))
             searchingValue = input(" > ")
 
-        results, indices = findData(searchingField, searchingValue, AES_key)
+        results, indices = findData(searchingField, searchingValue, AES_key, output)
 
         if results:
             # user action
             print(" Do you want to select an {}? (Y/N):".format(colored("account", "green")))
-            choice = input(" > ")
-            status = True if choice.upper() == "Y" else False
+            choice = choicePrompt()
 
-            if status:
+            if choice:
                 if len(results) > 1:
                     print(" Select the {} of your account: ".format(colored("ID", "red")))
                     accountNum = input(" > ")
@@ -316,10 +321,9 @@ def changeAccount(AES_key):
             print(" Please provide the new {}:".format(colored(fieldName, "green")))
             changeValue = input(" > ")
         print(" Are you sure you want to {} the {} of account {}! (Y/N):".format(colored("change", "red"), colored(fieldName, "green"), colored(ID, "red")))
-        choice = input(" > ")
-        status = True if choice.upper() == "Y" else False
+        choice = choicePrompt()
 
-        if status:
+        if choice:
             pwdBarrier = passwordBarrier(AES_key)
             if pwdBarrier:
                 changeData(ID, fieldName, changeValue, AES_key)
@@ -335,12 +339,23 @@ def showAllAccounts(AES_key):
 
 # option 6 - make backup
 def makeBackup():
-    print("Please specify the destination path you want to save the backup to:")
-    dst_path = input(" > ")
-    status = backup(dst_path)
-    if status:
-        print("The backup was saved!")
-        os.startfile(dst_path)
+    default_path = os.path.dirname(os.path.abspath(__file__)) + "\\backup"
+
+    print(" Do you want to specify a backup destination? (Y/N):".format())
+    choice = choicePrompt()
+
+    if choice:
+        print("Please specify the destination path you want to save the backup to:")
+        dst_path = input(" > ")
+        backupStatus = backup(dst_path)
+        if backupStatus:
+            print("The backup was saved!")
+            os.startfile(dst_path)
+        else:
+            print("The given destination path is not accessable, please specify a different path!")
+            makeBackup()
     else:
-        print("The given destination path is not accessable, please specify a different path!")
-        makeBackup()
+        backup(default_path)
+        print("The backup was saved!")
+        os.startfile(default_path)
+

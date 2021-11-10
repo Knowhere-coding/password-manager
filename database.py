@@ -133,12 +133,12 @@ def deleteData(ID, AES_key):
 # option 3 - search account data from database
 def findData(searchingField, searchingValue, AES_key, output=None):
     if output is None:
-        output = ["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"]
+        output = ["ID", "siteName", "username", "email", "password", "category"]
     accountData = PrettyTable()
     accountData.field_names = output
     results = []
     indices = []
-    outputRow2 = []
+    outputRows = []
 
     for row in readCsvDataDict("data/account_data.csv", AES_key):
         if row[searchingField].lower() == searchingValue.lower():
@@ -148,18 +148,20 @@ def findData(searchingField, searchingValue, AES_key, output=None):
             outputRow = []
             indices.append(row["ID"])
             for element in output:
-                outputRow.append(row[element])
-            outputRow2.append(outputRow)
-        outputRow2.sort(key=lambda row: row[1])
-        for row in outputRow2:
-            row[5] = "*"*len(row[5])
+                if element == "password":
+                    outputRow.append("*"*len(row[element]))
+                else:
+                    outputRow.append(row[element])
+            outputRows.append(outputRow)
+        outputRows.sort(key=lambda row: row[1])
+        for row in outputRows:
             accountData.add_row(row)
         print("")
-        print(" Results for: " + searchingValue)
+        print(" {} results for: {}".format(searchingField, searchingValue))
         print(accountData)
         return results, indices
     else:
-        print(" No results for: " + searchingValue)
+        print(" No {} results for: {}".format(searchingField, searchingValue))
         return [], []
 
 

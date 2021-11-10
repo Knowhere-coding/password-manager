@@ -36,5 +36,9 @@ def initialization():
 
         if not os.path.isdir("data"):
             os.mkdir("data")
+
+        if not os.path.isdir("backup"):
+            os.mkdir("backup")
+
         createMasterAccountDatabase(masterUsername, masterPassword)
         return True, masterUsername, masterPassword
