@@ -55,6 +55,20 @@ def checkMaster(masterUsername, masterPassword, AES_key):
     return status
 
 
+# check master password for the password barrier when changing/deleting data from the database
+def checkMasterPassword(masterPassword, AES_key):
+    masterPassword = sha512(masterPassword)
+
+    decryptFile("data/master_account_data.csv.enc", AES_key)
+    with open("data/master_account_data.csv") as csvDataFile:
+        csvReader = csv.reader(csvDataFile, delimiter=',')
+        for row in csvReader:
+            status = row[1] == masterPassword
+    encryptFile("data/master_account_data.csv", AES_key)
+
+    return status
+
+
 # initialization - create master account database .csv file
 def createMasterAccountDatabase(masterUsername, masterPassword):
     AES_key = AESkey(masterPassword)
@@ -78,6 +92,14 @@ def createAccountDatabase(AES_key):
         csv.writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"])
     encryptFile("data/account_data.csv", AES_key)
     print(" Account database created!")
+
+
+# get all indices of the entries of the database
+def getIndices(AES_key):
+    indices = []
+    for row in readCsvDataDict("data/account_data.csv", AES_key):
+        indices.append(row["ID"])
+    return indices
 
 
 # option 1 - store account data in database

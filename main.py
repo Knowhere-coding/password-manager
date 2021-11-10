@@ -9,6 +9,9 @@ from initialization import initialization
 from passwordManagement import AESkey
 
 
+# TODO: automatic backup
+# TODO: auto login
+
 tprint("---------------")
 tprint("Passwordmanager")
 tprint("---------------")

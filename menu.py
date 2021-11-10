@@ -7,7 +7,7 @@ from colorama import init
 from termcolor import colored
 import webbrowser
 from passwordManagement import createNewPassword
-from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup
+from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices
 from fileHandling import readCsvDataDict
 
 # initialize termcolor to work on windows
@@ -54,7 +54,7 @@ def openUrl(url):
     status = True if choice.upper() == "Y" else False
 
     if status:
-        webbrowser.open(url)
+        webbrowser.open_new_tab(url)
 
 
 # create/change password
@@ -169,6 +169,12 @@ def checkChangeDate(ID, changeDate, expiration, AES_key):
     return ""
 
 
+# password barrier for changing/deleting data from the database
+def passwordBarrier(AES_key):
+    masterPassword = pwinput.pwinput(prompt=" Please provide your master password: ")
+    return checkMasterPassword(masterPassword, AES_key)
+
+
 # option 1 - create new account
 def createAccount(AES_key):
     # category
@@ -179,6 +185,7 @@ def createAccount(AES_key):
     print(" Please provide the {} (e.g. reddit) you want to create a new account for:".format(colored("site name", "green")))
     siteName = input(" > ")
 
+    # TODO: url formatting -> https:// www . example . com
     # url
     print(" Please provide the {} (e.g. www.example.com) to the site:".format(colored("url", "green")))
     url = input(" > ")
@@ -219,7 +226,11 @@ def deleteAccount(AES_key):
         status = True if choice.upper() == "Y" else False
 
         if status:
-            deleteData(ID, AES_key)
+            pwdBarrier = passwordBarrier(AES_key)
+            if pwdBarrier:
+                deleteData(ID, AES_key)
+            else:
+                print("The given password was incorrect!")
 
 
 # option 3 - find account data
@@ -282,6 +293,11 @@ def changeAccount(AES_key):
         showDatabase(AES_key)
         print(" Please provide the {} of the account you want to change:".format(colored("ID", "green")))
         ID = input(" > ")
+
+        while ID not in getIndices(AES_key):
+            print(" The ID doesn't exists!")
+            ID = input(" > ")
+
         print(" Please select the {} you want to change:".format(colored("field name", "green")))
         fieldName = searchOption()
 
@@ -299,8 +315,16 @@ def changeAccount(AES_key):
         else:
             print(" Please provide the new {}:".format(colored(fieldName, "green")))
             changeValue = input(" > ")
+        print(" Are you sure you want to {} the {} of account {}! (Y/N):".format(colored("change", "red"), colored(fieldName, "green"), colored(ID, "red")))
+        choice = input(" > ")
+        status = True if choice.upper() == "Y" else False
 
-        changeData(ID, fieldName, changeValue, AES_key)
+        if status:
+            pwdBarrier = passwordBarrier(AES_key)
+            if pwdBarrier:
+                changeData(ID, fieldName, changeValue, AES_key)
+            else:
+                print("The given password was incorrect!")
 
 
 # option 5 - show all accounts
