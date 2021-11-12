@@ -1,6 +1,7 @@
 from Crypto import Random
 from Crypto.Cipher import AES
 import os
+from fileHandling import hideFile
 
 
 # encrypt text
@@ -26,6 +27,7 @@ def encryptFile(fileName, key):
     with open(fileName + ".enc", 'wb') as file:
         file.write(enc)
     os.remove(fileName)
+    hideFile(fileName + ".enc")
 
 
 # write decrypted text to file and delete .enc file

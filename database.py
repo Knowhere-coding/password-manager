@@ -1,17 +1,15 @@
 import csv
 import os
-import shutil
 import re
 from datetime import datetime
 from prettytable import PrettyTable
 from passwordManagement import AESkey, sha512
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
-from fileHandling import readCsvData, readCsvDataDict, writeCsvData, createZipFile
+from fileHandling import createZipFile
+from csvHandling import readCsvData, readCsvDataDict, writeCsvData
 
 
 # TODO: encryption on error
-
-
 # check if the database has entries
 def databaseStatus(AES_key):
     if len(readCsvData("data/account_data.csv", AES_key)) == 1:
@@ -25,7 +23,6 @@ def databaseStatus(AES_key):
 
 # validate the master account data
 def checkMaster(masterUsername, masterPassword, AES_key):
-    #AES_key = AESkey(masterPassword)
     masterPassword = sha512(masterPassword)
     error = False
 
@@ -51,7 +48,6 @@ def checkMaster(masterUsername, masterPassword, AES_key):
         encryptFile("data/master_account_data.csv", AES_key)
     else:
         status = False
-
     return status
 
 

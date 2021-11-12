@@ -8,12 +8,10 @@ from termcolor import colored
 import webbrowser
 from passwordManagement import createNewPassword
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices
-from fileHandling import readCsvDataDict
+from csvHandling import readCsvDataDict
 
 # initialize termcolor to work on windows
 init()
-
-# TODO: Delete terminal text (maybe not possible?)
 
 
 # default overlay
@@ -41,7 +39,6 @@ def choicePrompt():
 
 
 # copy data to clipboard
-# TODO: Delete Clipboard after X sec.
 def copyToClipboard(msg):
     pyperclip.copy(msg)
     print('-' * 47)
@@ -187,7 +184,6 @@ def createAccount(AES_key):
     print(" Please provide the {} (e.g. reddit) you want to create a new account for:".format(colored("site name", "green")))
     siteName = input(" > ")
 
-    # TODO: url formatting -> https:// www . example . com
     # url
     print(" Please provide the {} (e.g. www.example.com) to the site:".format(colored("url", "green")))
     url = input(" > ")
@@ -224,7 +220,7 @@ def deleteAccount(AES_key):
             if row["ID"] == ID:
                 siteName = row["siteName"]
         print(" Are you sure you want to {} the {} account! (Y/N):".format(colored("delete", "red"), colored(siteName, "green")))
-        choice = choice = choicePrompt()
+        choice = choicePrompt()
 
         if choice:
             pwdBarrier = passwordBarrier(AES_key)
@@ -358,4 +354,3 @@ def makeBackup():
         backup(default_path)
         print("The backup was saved!")
         os.startfile(default_path)
-

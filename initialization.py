@@ -1,8 +1,7 @@
 import os
 import re
 from database import createMasterAccountDatabase
-
-# TODO: let the user specify the backup directory
+from fileEncryption import hideFile
 
 
 # initialization (create Username/Password), build directories
@@ -36,9 +35,11 @@ def initialization():
 
         if not os.path.isdir("data"):
             os.mkdir("data")
+            hideFile("data")
 
         if not os.path.isdir("backup"):
             os.mkdir("backup")
+            hideFile("backup")
 
         createMasterAccountDatabase(masterUsername, masterPassword)
         return True, masterUsername, masterPassword

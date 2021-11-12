@@ -10,7 +10,6 @@ from passwordManagement import AESkey
 
 
 # TODO: automatic backup
-# TODO: auto login
 
 tprint("---------------")
 tprint("Passwordmanager")
@@ -21,14 +20,14 @@ status, masterUsername, masterPassword = initialization()
 
 # input master username/password
 # for IDE usage:
-if not status:
-    masterUsername = input(" Please enter the master username: ")
-    masterPassword = input(" Please enter the master password: ")
+#if not status:
+#    masterUsername = input(" Please enter the master username: ")
+#    masterPassword = input(" Please enter the master password: ")
 
 # for terminal usage:
-#if not status:
-#    masterUsername = pwinput.pwinput(prompt=" Please enter the master username: ")
-#    masterPassword = pwinput.pwinput(prompt=" Please enter the master password: ")
+if not status:
+    masterUsername = pwinput.pwinput(prompt=" Please enter the master username: ")
+    masterPassword = pwinput.pwinput(prompt=" Please enter the master password: ")
 
 AES_key = AESkey(masterPassword)
 
