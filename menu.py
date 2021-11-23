@@ -335,7 +335,7 @@ def showAllAccounts(AES_key):
 
 # option 6 - make backup
 def makeBackup():
-    default_path = os.path.dirname(os.path.abspath(__file__)) + "\\backup"
+    default_path = os.getcwd() + "\\backup"
 
     print(" Do you want to specify a backup destination? (Y/N):".format())
     choice = choicePrompt()
