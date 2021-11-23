@@ -56,5 +56,5 @@ External libraries:
   - pyperclip~=1.8.2
 
 
-        ®Copyrigth 2021 by Knowhere-coding
+        ®Copyrig 2021 by Knowhere-coding
 
