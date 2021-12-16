@@ -231,11 +231,17 @@ def deleteAccount(AES_key):
 
 
 # option 3 - find account data
-def findAccounts(AES_key):
+def findAccounts(AES_key, shortcut=False, shortcutInput=None):
     # field name
     output = None
+    # result
+    results = None
+    # account indices
+    indices = None
 
-    if databaseStatus(AES_key):
+    if shortcut:
+        results, indices = findData("siteName", shortcutInput, AES_key, output)
+    elif databaseStatus(AES_key):
         print(" Please select the {} you want to search for:".format(colored("field name", "green")))
         searchingField = searchOption()
         # value
@@ -257,35 +263,35 @@ def findAccounts(AES_key):
 
         results, indices = findData(searchingField, searchingValue, AES_key, output)
 
-        if results:
-            # user action
-            print(" Do you want to select an {}? (Y/N):".format(colored("account", "green")))
-            choice = choicePrompt()
+    if results:
+        # user action
+        print(" Do you want to select an {}? (Y/N):".format(colored("account", "green")))
+        choice = choicePrompt()
 
-            if choice:
-                if len(results) > 1:
-                    print(" Select the {} of your account: ".format(colored("ID", "red")))
-                    accountNum = input(" > ")
+        if choice:
+            if len(results) > 1:
+                print(" Select the {} of your account: ".format(colored("ID", "red")))
+                accountNum = input(" > ")
 
-                    while accountNum not in indices:
-                        accountNum = input(" The ID is not available, try again: ")
-                    index = indices.index(accountNum)
-                    password = checkChangeDate(results[index]["ID"], results[index]["changeDate"], results[index]["expiration"], AES_key)
+                while accountNum not in indices:
+                    accountNum = input(" The ID is not available, try again: ")
+                index = indices.index(accountNum)
+                password = checkChangeDate(results[index]["ID"], results[index]["changeDate"], results[index]["expiration"], AES_key)
 
-                    if password == "":
-                        copyToClipboard(results[index]["password"])
-                    else:
-                        copyToClipboard(password)
-
-                    openUrl(results[index]["url"])
+                if password == "":
+                    copyToClipboard(results[index]["password"])
                 else:
-                    print(" Automatically selected Account {}!".format(colored(results[0]["ID"], "cyan")))
-                    password = checkChangeDate(results[0]["ID"], results[0]["changeDate"], results[0]["expiration"], AES_key)
-                    if password == "":
-                        copyToClipboard(results[0]["password"])
-                    else:
-                        copyToClipboard(password)
-                    openUrl(results[0]["url"])
+                    copyToClipboard(password)
+
+                openUrl(results[index]["url"])
+            else:
+                print(" Automatically selected Account {}!".format(colored(results[0]["ID"], "cyan")))
+                password = checkChangeDate(results[0]["ID"], results[0]["changeDate"], results[0]["expiration"], AES_key)
+                if password == "":
+                    copyToClipboard(results[0]["password"])
+                else:
+                    copyToClipboard(password)
+                openUrl(results[0]["url"])
 
 
 # option 4 - change account data
@@ -295,9 +301,10 @@ def changeAccount(AES_key):
         print(" Please provide the {} of the account you want to change:".format(colored("ID", "green")))
         ID = input(" > ")
 
-        while ID not in getIndices(AES_key):
+        if ID not in getIndices(AES_key):
             print(" The ID doesn't exists!")
-            ID = input(" > ")
+            return
+            #ID = input(" > ")
 
         print(" Please select the {} you want to change:".format(colored("field name", "green")))
         fieldName = searchOption()

@@ -9,8 +9,6 @@ from initialization import initialization
 from passwordManagement import AESkey
 
 
-# TODO: automatic backup
-
 tprint("---------------")
 tprint("Passwordmanager")
 tprint("---------------")
@@ -86,4 +84,5 @@ while True:
         pyperclip.copy("")  # clear clipboard
         sys.exit()
     else:
+        findAccounts(AES_key, True, option)
         option, start = optionMenu()
