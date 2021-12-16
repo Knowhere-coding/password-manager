@@ -1,7 +1,5 @@
 import zipfile
 import os
-import win32file
-import win32con
 import re
 from datetime import datetime
 
@@ -28,5 +26,4 @@ def createZipFile(dst_path):
 
 # hide files in explorer
 def hideFile(filename):
-    flags = win32file.GetFileAttributesW(filename)
-    win32file.SetFileAttributes(filename, win32con.FILE_ATTRIBUTE_HIDDEN | flags)
+    os.system("attrib +h " + filename)
