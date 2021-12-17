@@ -7,7 +7,7 @@ from colorama import init
 from termcolor import colored
 import webbrowser
 from passwordManagement import createNewPassword
-from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices
+from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getData
 from csvHandling import readCsvDataDict
 
 # initialize termcolor to work on windows
@@ -80,72 +80,13 @@ def passwordOption():
     return password
 
 
-# expiration option
-def expirationOption():
-    # option to define an expiration period for the password
-    period = {1: 1,     # daily
-              2: 7,     # weekly
-              3: 30,    # monthly
-              4: 90,    # quarterly
-              5: 365,   # yearly
-              6: 0}     # never
-
-    # choose expiration period
-    print("   1 - {}".format(colored("daily", "white")))
-    print("   2 - {}".format(colored("weekly", "white")))
-    print("   3 - {}".format(colored("monthly", "white")))
-    print("   4 - {}".format(colored("quarterly", "white")))
-    print("   5 - {}".format(colored("yearly", "white")))
-    print("   6 - {}".format(colored("never", "white")))
-    expirationNum = input(" > ")
-    while expirationNum not in ['1', '2', '3', '4', '5', '6']:
-        expirationNum = input(" > ")
-    return period[int(expirationNum)]
-
-
-# category option
-def categoryOption():
-    # category
-    categories = {1: "email",
-                  2: "social media",
-                  3: "gaming",
-                  4: "coding",
-                  5: "shopping",
-                  6: "Banking",
-                  7: "education",
-                  8: "private",
-                  9: "other"}
-
-    print("   1 - {}".format(colored("Email", "white")))
-    print("   2 - {}".format(colored("Social media", "white")))
-    print("   3 - {}".format(colored("Gaming", "white")))
-    print("   4 - {}".format(colored("Coding", "white")))
-    print("   5 - {}".format(colored("Shopping", "white")))
-    print("   6 - {}".format(colored("Banking", "white")))
-    print("   7 - {}".format(colored("Education", "white")))
-    print("   8 - {}".format(colored("Private", "white")))
-    print("   9 - {}".format(colored("Other", "white")))
-    categoryNum = input(" > ")
-    while categoryNum not in ['1', '2', '3', '4', '5', '6', '7', '8', '9']:
-        categoryNum = input(" > ")
-    return categories[int(categoryNum)]
-
-
-# search option
-def searchOption():
-    # field names
-    field_names = {1: "siteName", 2: "url", 3: "username", 4: "email", 5: "password", 6: "expiration", 7: "category"}
-    print("   1 - {}".format(colored(field_names[1], "white")))
-    print("   2 - {}".format(colored(field_names[2], "white")))
-    print("   3 - {}".format(colored(field_names[3], "white")))
-    print("   4 - {}".format(colored(field_names[4], "white")))
-    print("   5 - {}".format(colored(field_names[5], "white")))
-    print("   6 - {}".format(colored(field_names[6], "white")))
-    print("   7 - {}".format(colored(field_names[7], "white")))
-    field_nameNum = input(" > ")
-    while field_nameNum not in ['1', '2', '3', '4', '5', '6', '7']:
-        field_nameNum = input(" > ")
-    return field_names[int(field_nameNum)]
+def showOptions(options):
+    for key in options:
+        print("   {} - {}".format(key, colored(options[key], "white")))
+    userInput = input(" > ")
+    while userInput not in [str(x) for x in options.keys()]:
+        userInput = input(" > ")
+    return options[int(userInput)]
 
 
 # check change date and change password
@@ -178,7 +119,7 @@ def passwordBarrier(AES_key):
 def createAccount(AES_key):
     # category
     print(" Choose the {} for your new account:".format(colored("category", "green")))
-    category = categoryOption()
+    category = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "Banking", 7: "education", 8: "private", 9: "other"})
 
     # site name
     print(" Please provide the {} (e.g. reddit) you want to create a new account for:".format(colored("site name", "green")))
@@ -193,17 +134,24 @@ def createAccount(AES_key):
     username = input(" > ")
     if not username:
         username = ""
-# TODO: Email-Auswahl
+
     # email
-    print(" Please provide an {}:".format(colored("email", "green")))
-    email = input(" > ")
+    print(" Please provide an {} or select an existing {}:".format(colored("email", "green"), colored("email", "green")))
+    options = {key: value for (key, value) in enumerate(getData("email", AES_key), 1)}
+    for key in options:
+        print("   {} - {}".format(key, colored(options[key], "white")))
+    userInput = input(" > ")
+    if userInput in [str(x) for x in options.keys()]:
+        email = options[int(userInput)]
+    else:
+        email = userInput
 
     # password
     password = passwordOption()
 
     # expiration date
     print(" Choose the {} of your password:".format(colored("expiration period", "green")))
-    expiration = expirationOption()
+    expiration = showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0})
 
     if storeData(siteName, url, username, email, password, expiration, category, AES_key):
         copyToClipboard(password)
@@ -243,14 +191,14 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
         results, indices = findData("siteName", shortcutInput, AES_key, output)
     elif databaseStatus(AES_key):
         print(" Please select the {} you want to search for:".format(colored("field name", "green")))
-        searchingField = searchOption()
+        searchingField = showOptions({1: "siteName", 2: "url", 3: "username", 4: "email", 5: "password", 6: "expiration", 7: "category"})
         # value
         if searchingField == "category":
             print(" Choose the {} you want to search for:".format(colored("category", "green")))
-            searchingValue = categoryOption()
+            searchingValue = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "Banking", 7: "education", 8: "private", 9: "other"})
         elif searchingField == "expiration":
             print(" Choose the {} you want to search for:".format(colored("expiration period", "green")))
-            searchingValue = str(expirationOption())
+            searchingValue = str(showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0}))
             output = ["ID", "siteName", "username", "email", "password", "expiration", "category"]
         elif searchingField == "password":
             print(" Please provide the {} you wanna search for:".format(colored(searchingField, "green")))
@@ -297,19 +245,19 @@ def changeAccount(AES_key):
             #ID = input(" > ")
 
         print(" Please select the {} you want to change:".format(colored("field name", "green")))
-        fieldName = searchOption()
+        fieldName = showOptions({1: "siteName", 2: "url", 3: "username", 4: "email", 5: "password", 6: "expiration", 7: "category"})
 
         if fieldName == "password":
             changeValue = passwordOption()
             print(" Choose the new {} for your password:".format(colored("expiration period", "green")))
-            expiration = expirationOption()
+            expiration = showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0})
             changeData(ID, "expiration", expiration, AES_key)
         elif fieldName == "expiration":
             print(" Choose the new {} for your password:".format(colored("expiration period", "green")))
-            changeValue = expirationOption()
+            changeValue = showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0})
         elif fieldName == "category":
             print(" Choose the new {} for your account:".format(colored("category", "green")))
-            changeValue = categoryOption()
+            changeValue = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "Banking", 7: "education", 8: "private", 9: "other"})
         else:
             print(" Please provide the new {}:".format(colored(fieldName, "green")))
             changeValue = input(" > ")

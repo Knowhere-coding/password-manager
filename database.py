@@ -9,7 +9,6 @@ from fileHandling import createZipFile
 from csvHandling import readCsvData, readCsvDataDict, writeCsvData
 
 
-# TODO: encryption on error
 # check if the database has entries
 def databaseStatus(AES_key):
     if len(readCsvData("data/account_data.csv", AES_key)) == 1:
@@ -96,6 +95,16 @@ def getIndices(AES_key):
     for row in readCsvDataDict("data/account_data.csv", AES_key):
         indices.append(row["ID"])
     return indices
+
+
+def getData(fieldName, AES_key, unique=True):
+    results = []
+    rows = readCsvDataDict("data/account_data.csv", AES_key)
+    for row in rows:
+        if row[fieldName] in results and unique:
+            continue
+        results.append(row[fieldName])
+    return results
 
 
 # option 1 - store account data in database
