@@ -50,37 +50,37 @@ while True:
         print("You have been logged out due to inactivity!")
         time.sleep(10)
         sys.exit()
-    elif option == "1":
+    elif option == "1": # create account
         option = ""
         pyperclip.copy("")  # clear clipboard
         createAccount(AES_key)
         start = time.time()
-    elif option == "2":
+    elif option == "2": # delete account data
         option = ""
         pyperclip.copy("")  # clear clipboard
         deleteAccount(AES_key)
         start = time.time()
-    elif option == "3":
+    elif option == "3": # find account data
         option = ""
         pyperclip.copy("")  # clear clipboard
         findAccounts(AES_key)
         start = time.time()
-    elif option == "4":
+    elif option == "4": # change account data
         option = ""
         pyperclip.copy("")  # clear clipboard
         changeAccount(AES_key)
         start = time.time()
-    elif option == "5":
+    elif option == "5": # show all accounts
         option = ""
         pyperclip.copy("")  # clear clipboard
         showAllAccounts(AES_key)
         start = time.time()
-    elif option == "6":
+    elif option == "6": # make backup
         option = ""
         pyperclip.copy("") # clear clipboard
         makeBackup()
         start = time.time()
-    elif option == "Q" or option == "q":
+    elif option == "Q" or option == "q": # quit
         pyperclip.copy("")  # clear clipboard
         sys.exit()
     else:

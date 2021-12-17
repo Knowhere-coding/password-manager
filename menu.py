@@ -193,7 +193,7 @@ def createAccount(AES_key):
     username = input(" > ")
     if not username:
         username = ""
-
+# TODO: Email-Auswahl
     # email
     print(" Please provide an {}:".format(colored("email", "green")))
     email = input(" > ")
@@ -264,34 +264,24 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
         results, indices = findData(searchingField, searchingValue, AES_key, output)
 
     if results:
-        # user action
-        print(" Do you want to select an {}? (Y/N):".format(colored("account", "green")))
-        choice = choicePrompt()
+        if len(results) > 1:
+            print(" Select the {} of your account: ".format(colored("ID", "red")))
+            accountNum = input(" > ")
 
-        if choice:
-            if len(results) > 1:
-                print(" Select the {} of your account: ".format(colored("ID", "red")))
-                accountNum = input(" > ")
+            while accountNum not in indices:
+                accountNum = input(" The ID is not available, try again: ")
+            index = indices.index(accountNum)
+        else:
+            print(" Automatically selected Account {}!".format(colored(results[0]["ID"], "cyan")))
+            index = 0
 
-                while accountNum not in indices:
-                    accountNum = input(" The ID is not available, try again: ")
-                index = indices.index(accountNum)
-                password = checkChangeDate(results[index]["ID"], results[index]["changeDate"], results[index]["expiration"], AES_key)
+        password = checkChangeDate(results[index]["ID"], results[index]["changeDate"], results[index]["expiration"], AES_key)
+        if password == "":
+            copyToClipboard(results[index]["password"])
+        else:
+            copyToClipboard(password)
 
-                if password == "":
-                    copyToClipboard(results[index]["password"])
-                else:
-                    copyToClipboard(password)
-
-                openUrl(results[index]["url"])
-            else:
-                print(" Automatically selected Account {}!".format(colored(results[0]["ID"], "cyan")))
-                password = checkChangeDate(results[0]["ID"], results[0]["changeDate"], results[0]["expiration"], AES_key)
-                if password == "":
-                    copyToClipboard(results[0]["password"])
-                else:
-                    copyToClipboard(password)
-                openUrl(results[0]["url"])
+        openUrl(results[index]["url"])
 
 
 # option 4 - change account data
