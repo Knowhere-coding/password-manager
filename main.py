@@ -3,6 +3,7 @@ from art import *
 import pwinput
 import pyperclip
 import time
+import os
 from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, makeBackup
 from database import checkMaster
 from initialization import initialization
@@ -18,14 +19,14 @@ status, masterUsername, masterPassword = initialization()
 
 # input master username/password
 # for IDE usage:
-if not status:
-    masterUsername = input(" Please enter the master username: ")
-    masterPassword = input(" Please enter the master password: ")
+#if not status:
+#    masterUsername = input(" Please enter the master username: ")
+#    masterPassword = input(" Please enter the master password: ")
 
 # for terminal usage:
-#if not status:
-#    masterUsername = pwinput.pwinput(prompt=" Please enter the master username: ")
-#    masterPassword = pwinput.pwinput(prompt=" Please enter the master password: ")
+if not status:
+    masterUsername = pwinput.pwinput(prompt=" Please enter the master username: ")
+    masterPassword = pwinput.pwinput(prompt=" Please enter the master password: ")
 
 AES_key = AESkey(masterPassword)
 
@@ -44,6 +45,7 @@ option, start = optionMenu()
 while True:
     # stop inactivity timer
     stop = time.time()
+    os.system("cls")
 
     if stop - start > 60:  # inactivity time in sec.
         pyperclip.copy("")  # clear clipboard

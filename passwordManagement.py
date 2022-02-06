@@ -15,10 +15,12 @@ def AESkey(password):
 
 
 # create a random password
-def createNewPassword(specialChars="!#$%&'()*+-./:;<=>?@[]^_`{|}~"):
+def createNewPassword(minLength, maxLength, specialChars):
+    if specialChars == "-":
+        specialChars = "!#$%&'()*+-./:;<=>?@[]^_`{|}~"
     specialChars.replace(",", "")
     password = ""
-    for x in range(randint(16, 32)):
+    for x in range(randint(minLength, maxLength)):
         i = randint(1, 100)
         if isprime(i):
             password += choice(specialChars)

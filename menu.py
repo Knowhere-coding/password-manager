@@ -7,7 +7,7 @@ from colorama import init
 from termcolor import colored
 import webbrowser
 from passwordManagement import createNewPassword
-from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getData
+from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getColumnData, getRowData
 from csvHandling import readCsvDataDict
 
 # initialize termcolor to work on windows
@@ -66,18 +66,50 @@ def passwordOption():
 
     # generate random password
     if choice:
-        print(" Please specify the given {} besides all letters and digits (if none type -):".format(colored("specail characters", "green")))
-        specialChars = input(" > ")
-        if specialChars == "-":
-            password = createNewPassword()
-        else:
-            password = createNewPassword(specialChars)
+        minLength, maxLength = getMinMaxLength()
+        specialChars = getSpecialChars()
+        password = createNewPassword(minLength, maxLength, specialChars)
     # provide own password
     else:
         print(" Please provide your own {}:".format(colored("password", "green")))
         password = pwinput.pwinput(prompt=" > ")
 
     return password
+
+
+# let the user define valid special chars for the random generated password
+def getSpecialChars():
+    print(" Please specify the given {} besides all letters and digits (if none type -):".format(colored("specail characters", "green")))
+    return input(" > ")
+
+
+# let the user define the minimum and maximum length of the random generated password
+def getMinMaxLength():
+    minLength = 1
+    maxLength = 0
+
+    try:
+        print(" Please specify the {} length of the password:".format(colored("minimum", "red")))
+        minLength = int(input(" > "))
+        print(" Please specify the {} length of the password:".format(colored("maximum", "green")))
+        maxLength = int(input(" > "))
+    except ValueError:
+        print("Please input numbers!")
+
+    if minLength > maxLength:
+        print(" The minimum value is higher than the maximum value:")
+    while minLength > maxLength:
+        try:
+            print(" New {}:".format(colored("minimum", "red")))
+            minLength = int(input(" > "))
+            print(" New {}:".format(colored("maximum", "green")))
+            maxLength = int(input(" > "))
+        except ValueError:
+            print(" Please input numbers!")
+
+    if maxLength > 100:
+        print(" Secure is not enough for you, right? :D")
+    return minLength, maxLength
 
 
 def showOptions(options):
@@ -101,8 +133,11 @@ def checkChangeDate(ID, changeDate, expiration, AES_key):
             choice = choicePrompt()
             if choice:
                 password = passwordOption()
-                changeData(ID, "password", password, AES_key)
-                return password
+                if passwordBarrier(AES_key):
+                    changeData(ID, "password", password, AES_key)
+                    return password
+                else:
+                    print("The given password was incorrect!")
             return ""
         else:
             return ""
@@ -137,7 +172,7 @@ def createAccount(AES_key):
 
     # email
     print(" Please provide an {} or select an existing {}:".format(colored("email", "green"), colored("email", "green")))
-    options = {key: value for (key, value) in enumerate(getData("email", AES_key), 1)}
+    options = {key: value for (key, value) in enumerate(getColumnData("email", AES_key), 1)}
     for key in options:
         print("   {} - {}".format(key, colored(options[key], "white")))
     userInput = input(" > ")
@@ -163,19 +198,18 @@ def deleteAccount(AES_key):
         showDatabase(AES_key)
         print(" Please provide the {} of the account you want to delete:".format(colored("ID", "red")))
         ID = input(" > ")
-        siteName = ""
-        for row in readCsvDataDict("data/account_data.csv", AES_key):
-            if row["ID"] == ID:
-                siteName = row["siteName"]
-        print(" Are you sure you want to {} the {} account! (Y/N):".format(colored("delete", "red"), colored(siteName, "green")))
-        choice = choicePrompt()
 
+        if ID not in getIndices(AES_key):
+            print(" The ID doesn't exists!")
+            return
+
+        print(" Are you sure you want to {} the {} account! (Y/N):".format(colored("delete", "red"), colored(getRowData(ID, AES_key)["siteName"], "green")))
+        choice = choicePrompt()
         if choice:
-            pwdBarrier = passwordBarrier(AES_key)
-            if pwdBarrier:
+            if passwordBarrier(AES_key):
                 deleteData(ID, AES_key)
             else:
-                print("The given password was incorrect!")
+                print(" The given password was incorrect!")
 
 
 # option 3 - find account data
@@ -242,16 +276,15 @@ def changeAccount(AES_key):
         if ID not in getIndices(AES_key):
             print(" The ID doesn't exists!")
             return
-            #ID = input(" > ")
 
         print(" Please select the {} you want to change:".format(colored("field name", "green")))
         fieldName = showOptions({1: "siteName", 2: "url", 3: "username", 4: "email", 5: "password", 6: "expiration", 7: "category"})
+        expiration = 0
 
         if fieldName == "password":
             changeValue = passwordOption()
             print(" Choose the new {} for your password:".format(colored("expiration period", "green")))
             expiration = showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0})
-            changeData(ID, "expiration", expiration, AES_key)
         elif fieldName == "expiration":
             print(" Choose the new {} for your password:".format(colored("expiration period", "green")))
             changeValue = showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0})
@@ -261,13 +294,14 @@ def changeAccount(AES_key):
         else:
             print(" Please provide the new {}:".format(colored(fieldName, "green")))
             changeValue = input(" > ")
-        print(" Are you sure you want to {} the {} of account {}! (Y/N):".format(colored("change", "red"), colored(fieldName, "green"), colored(ID, "red")))
+        print(" Are you sure you want to {} the {} of the {} account! (Y/N):".format(colored("change", "red"), colored(fieldName, "green"), colored(getRowData(ID, AES_key)["siteName"], "red")))
         choice = choicePrompt()
 
         if choice:
-            pwdBarrier = passwordBarrier(AES_key)
-            if pwdBarrier:
+            if passwordBarrier(AES_key):
                 changeData(ID, fieldName, changeValue, AES_key)
+                if fieldName == "password":
+                    changeData(ID, "expiration", expiration, AES_key)
             else:
                 print("The given password was incorrect!")
 
@@ -276,6 +310,7 @@ def changeAccount(AES_key):
 def showAllAccounts(AES_key):
     if databaseStatus(AES_key):
         showDatabase(AES_key)
+    pwinput.pwinput(prompt=" Press enter to continue!", mask="")
 
 
 # option 6 - make backup

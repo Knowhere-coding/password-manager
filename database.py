@@ -97,7 +97,7 @@ def getIndices(AES_key):
     return indices
 
 
-def getData(fieldName, AES_key, unique=True):
+def getColumnData(fieldName, AES_key, unique=True):
     results = []
     rows = readCsvDataDict("data/account_data.csv", AES_key)
     for row in rows:
@@ -105,6 +105,14 @@ def getData(fieldName, AES_key, unique=True):
             continue
         results.append(row[fieldName])
     return results
+
+
+def getRowData(ID, AES_key):
+    rows = readCsvDataDict("data/account_data.csv", AES_key)
+    for row in rows:
+        if row["ID"] == ID:
+            return row
+    return False
 
 
 # option 1 - store account data in database
