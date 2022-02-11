@@ -79,13 +79,13 @@ def passwordOption():
 
 # let the user define valid special chars for the random generated password
 def getSpecialChars():
-    print(" Please specify the given {} besides all letters and digits (if none type -):".format(colored("specail characters", "green")))
+    print(" Please specify the given {} besides all letters and digits (if none type -):".format(colored("special characters", "green")))
     return input(" > ")
 
 
 # let the user define the minimum and maximum length of the random generated password
 def getMinMaxLength():
-    minLength = 1
+    minLength = 0
     maxLength = 0
 
     try:
@@ -94,11 +94,16 @@ def getMinMaxLength():
         print(" Please specify the {} length of the password:".format(colored("maximum", "green")))
         maxLength = int(input(" > "))
     except ValueError:
-        print("Please input numbers!")
+        print(" Please input numbers!")
 
-    if minLength > maxLength:
-        print(" The minimum value is higher than the maximum value:")
-    while minLength > maxLength:
+    while minLength <= 0 or maxLength < minLength or maxLength > 64:
+        if minLength <= 0:
+            print(" The minimum value can not be 0 or negative!")
+        elif maxLength < minLength:
+            print(" The minimum value can not be higher than the maximum value!")
+        elif maxLength > 64:
+            print(" The maximum length of the password is 64!")
+
         try:
             print(" New {}:".format(colored("minimum", "red")))
             minLength = int(input(" > "))
@@ -107,7 +112,7 @@ def getMinMaxLength():
         except ValueError:
             print(" Please input numbers!")
 
-    if maxLength > 100:
+    if maxLength > 32:
         print(" Secure is not enough for you, right? :D")
     return minLength, maxLength
 
@@ -185,7 +190,7 @@ def createAccount(AES_key):
     password = passwordOption()
 
     # expiration date
-    print(" Choose the {} of your password:".format(colored("expiration period", "green")))
+    print(" Choose the {} of your password:".format(colored("expiration period (in days)", "green")))
     expiration = showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0})
 
     if storeData(siteName, url, username, email, password, expiration, category, AES_key):
@@ -231,7 +236,7 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
             print(" Choose the {} you want to search for:".format(colored("category", "green")))
             searchingValue = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "Banking", 7: "education", 8: "private", 9: "other"})
         elif searchingField == "expiration":
-            print(" Choose the {} you want to search for:".format(colored("expiration period", "green")))
+            print(" Choose the {} you want to search for:".format(colored("expiration period (in days)", "green")))
             searchingValue = str(showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0}))
             output = ["ID", "siteName", "username", "email", "password", "expiration", "category"]
         elif searchingField == "password":
@@ -283,10 +288,10 @@ def changeAccount(AES_key):
 
         if fieldName == "password":
             changeValue = passwordOption()
-            print(" Choose the new {} for your password:".format(colored("expiration period", "green")))
+            print(" Choose the new {} for your password:".format(colored("expiration period (in days)", "green")))
             expiration = showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0})
         elif fieldName == "expiration":
-            print(" Choose the new {} for your password:".format(colored("expiration period", "green")))
+            print(" Choose the new {} for your password:".format(colored("expiration period (in days)", "green")))
             changeValue = showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0})
         elif fieldName == "category":
             print(" Choose the new {} for your account:".format(colored("category", "green")))
@@ -328,7 +333,7 @@ def makeBackup():
             print("The backup was saved!")
             os.startfile(dst_path)
         else:
-            print("The given destination path is not accessable, please specify a different path!")
+            print("The given destination path is not accessible, please specify a different path!")
             makeBackup()
     else:
         backup(default_path)
