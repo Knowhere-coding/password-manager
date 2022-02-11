@@ -7,14 +7,13 @@ from passwordManagement import AESkey, sha512
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
 from fileHandling import createZipFile
 from csvHandling import readCsvData, readCsvDataDict, writeCsvData
+import menu
 
 
 # check if the database has entries
 def databaseStatus(AES_key):
     if len(readCsvData("data/account_data.csv", AES_key)) == 1:
-        print("")
-        print(" The database is empty!")
-        print("")
+        menu.systemMessage = " The database is empty!"
         return False
     else:
         return True
@@ -77,7 +76,7 @@ def createMasterAccountDatabase(masterUsername, masterPassword):
         file.write(AES_key)
     encryptFile("data/AES_key.txt", AES_key)
 
-    print(" All master data stored!")
+    menu.systemMessage = " All master data stored!"
     createAccountDatabase(AES_key)
 
 
@@ -86,7 +85,7 @@ def createAccountDatabase(AES_key):
     with open("data/account_data.csv", mode="w", newline="") as csvDataFile:
         csv.writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"])
     encryptFile("data/account_data.csv", AES_key)
-    print(" Account database created!")
+    menu.systemMessage = " Account database created!"
 
 
 # get all indices of the entries of the database
@@ -123,7 +122,7 @@ def storeData(siteName, url, username, email, password, expiration, category, AE
 
     for ID, row in enumerate(rows, 0):
         if row[1:5] == [siteName, url, username, email]:
-            print(" The account already exists!")
+            menu.systemMessage = " The account already exists!"
             status = False
             break
     if status:
@@ -174,7 +173,7 @@ def findData(searchingField, searchingValue, AES_key, output=None):
         print(accountData)
         return results, indices
     else:
-        print(" No {} results for: {}".format(searchingField, searchingValue))
+        menu.systemMessage = " No {} results for: {}".format(searchingField, searchingValue)
         return [], []
 
 

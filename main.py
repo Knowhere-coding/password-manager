@@ -1,10 +1,10 @@
 import sys
-from art import *
+from art import tprint
 import pwinput
 import pyperclip
 import time
 import os
-from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, makeBackup
+from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, makeBackup, systemMessage
 from database import checkMaster
 from initialization import initialization
 from passwordManagement import AESkey
@@ -32,7 +32,7 @@ AES_key = AESkey(masterPassword)
 
 # check login
 if checkMaster(masterUsername, masterPassword, AES_key):
-    print(" You're in!")
+    systemMessage = " You're in!"
 else:
     print(" Wrong master username or password!")
     time.sleep(10)
@@ -45,11 +45,10 @@ option, start = optionMenu()
 while True:
     # stop inactivity timer
     stop = time.time()
-    os.system("cls")
 
     if stop - start > 60:  # inactivity time in sec.
         pyperclip.copy("")  # clear clipboard
-        print("You have been logged out due to inactivity!")
+        print(" You have been logged out due to inactivity!")
         time.sleep(10)
         sys.exit()
     elif option == "1": # create account
@@ -84,6 +83,7 @@ while True:
         start = time.time()
     elif option == "Q" or option == "q": # quit
         pyperclip.copy("")  # clear clipboard
+        os.system("cls")
         sys.exit()
     else:
         if option != "":

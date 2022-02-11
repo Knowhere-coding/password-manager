@@ -1,5 +1,6 @@
 import csv
 from fileEncryption import encryptFile, decryptFile
+import menu
 
 
 # read .csv file data
@@ -34,7 +35,7 @@ def writeCsvData(fileName, rows, case, AES_key):
         for row in rows:
             csvWriter.writerow(row)
         if case == "d":
-            print(" Account deleted!")
+            menu.systemMessage = " All data stored!"
         elif case == "s":
-            print(" All data stored!")
+            menu.systemMessage = " All data stored!"
     encryptFile(fileName, AES_key)
