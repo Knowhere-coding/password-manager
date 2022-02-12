@@ -7,6 +7,7 @@ from colorama import init
 from termcolor import colored
 from art import tprint
 import webbrowser
+import textFile
 from passwordManagement import createNewPassword
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getColumnData, getRowData
 from csvHandling import readCsvDataDict
@@ -21,13 +22,13 @@ def optionMenu():
     global systemMessage
     os.system("cls")
 
+    # show logo
+    print(textFile.logo)
+
     # start inactivity timer
     start = time.time()
 
-    tprint("---------------")
-    tprint("Passwordmanager")
-    tprint("---------------")
-
+    # show system message
     if systemMessage != "":
         print("-" * 30)
         print(systemMessage)

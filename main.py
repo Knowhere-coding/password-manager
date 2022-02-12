@@ -8,11 +8,13 @@ from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeA
 from database import checkMaster
 from initialization import initialization
 from passwordManagement import AESkey
+import textFile
 
+# resize terminal window
+os.system("mode con cols=200 lines=50")
 
-tprint("---------------")
-tprint("Passwordmanager")
-tprint("---------------")
+# show logo
+print(textFile.logo)
 
 # initialization
 status, masterUsername, masterPassword = initialization()
@@ -36,6 +38,7 @@ if checkMaster(masterUsername, masterPassword, AES_key):
 else:
     print(" Wrong master username or password!")
     time.sleep(10)
+    os.system("cls")
     sys.exit()
 
 # default overlay
