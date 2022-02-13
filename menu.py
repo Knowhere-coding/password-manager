@@ -269,18 +269,24 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
         results, indices = findData(searchingField, searchingValue, AES_key, output)
 
     if results:
-        if len(results) > 1:
-            print(" Select the {} of your account: ".format(colored("ID", "red")))
-            accountNum = input(" > ")
-
-            while accountNum not in indices:
-                accountNum = input(" The ID is not available, try again: ")
-            index = indices.index(accountNum)
-        else:
+        if shortcut and len(results) == 1:
             print(" Automatically selected Account {}!".format(colored(results[0]["ID"], "cyan")))
             index = 0
+        else:
+            print(" Select the {} of your account or press {} to go back to the menu: ".format(colored("ID", "red"), colored("ENTER", "red")))
+            accountNum = input(" > ")
 
-        password = checkExpirationDate(results[index]["ID"], results[index]["changeDate"], results[index]["expiration"], AES_key)
+            if not accountNum:
+                return
+            while accountNum not in indices:
+                print(" The ID is not available, try again!")
+                accountNum = input(" > ")
+                if not accountNum:
+                    return
+            index = indices.index(accountNum)
+
+        password = checkExpirationDate(results[index]["ID"], results[index]["changeDate"], results[index]["expiration"],
+                                       AES_key)
         if password == "":
             copyToClipboard(results[index]["password"])
         else:
