@@ -11,6 +11,7 @@ import textFile
 from passwordManagement import createNewPassword
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getColumnData, getRowData
 from csvHandling import readCsvDataDict
+from printLayout import writeDataToExcel
 
 # initialize termcolor to work on windows
 init()
@@ -42,7 +43,8 @@ def optionMenu():
     print(" 3 - Find your {}".format(colored("account data", "cyan")))
     print(" 4 - Change your {}".format(colored("account data", "cyan")))
     print(" 5 - Show all your {}".format(colored("accounts", "cyan")))
-    print(" 6 - Make {}".format(colored("backup", "cyan")))
+    print(" 6 - Create {}".format(colored("backup", "cyan")))
+    print(" 7 - Create {}".format(colored("print layout", "cyan")))
     print(" Q - {}".format(colored("Exit", "cyan")))
     print('-' * 30)
     return input(" > "), start
@@ -344,24 +346,32 @@ def showAllAccounts(AES_key):
 
 
 # option 6 - make backup
-def makeBackup():
+def createBackup():
     global systemMessage
-    default_path = os.getcwd() + "\\backup"
+    defaultPath = os.getcwd() + "\\backup"
 
     print(" Do you want to specify a backup destination? (Y/N):".format())
     choice = choicePrompt()
 
     if choice:
         print(" Please specify the destination path you want to save the backup to:")
-        dst_path = input(" > ")
-        backupStatus = backup(dst_path)
+        dstPath = input(" > ")
+        backupStatus = backup(dstPath)
         if backupStatus:
             systemMessage = " The backup was saved!"
-            os.startfile(dst_path)
+            os.startfile(dstPath)
         else:
             print(" The given destination path is not accessible, please specify a different path!")
-            makeBackup()
+            createBackup()
     else:
-        backup(default_path)
+        backup(defaultPath)
         systemMessage = " The backup was saved!"
-        os.startfile(default_path)
+        os.startfile(defaultPath)
+
+
+# option 7 - print layout
+def createPrintLayout(AES_key):
+    templateFilePath = "print_layout/printLayout.xlsx"
+    dataFilePath = "data/account_data.csv"
+
+    writeDataToExcel(templateFilePath, dataFilePath, AES_key)

@@ -29,23 +29,3 @@ def createNewPassword(minLength, maxLength, specialChars):
         elif i % 2 == 0:
             password += choice(ascii_letters)
     return password
-
-
-# print(AESkey("1234"))
-# print(createNewPassword())
-
-# -------------- Calculation ----------------------------------------------------------------------------- #
-
-# primes, odds, evens = 0, 0, 0
-#
-# for x in range(100):
-#    if isprime(x):     # 25%
-#        primes += 1
-#    elif x%2==1:       # 26%
-#        odds += 1
-#    elif x%2==0:       # 49%
-#        evens += 1
-#
-# print("Special characters: {}%\nDigits: {}%\nLetters: {}%\nSum: {}%".format(primes, odds, evens, (primes+odds+evens)))
-
-# -------------------------------------------------------------------------------------------------------- #

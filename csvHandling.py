@@ -15,6 +15,10 @@ def readCsvData(fileName, AES_key):
     return rows
 
 
+def readCsvDataWithoutHead(fileName, AES_key):
+    return readCsvData(fileName, AES_key)[1:]
+
+
 # read .csv file data (DictReader)
 def readCsvDataDict(fileName, AES_key):
     rows = []

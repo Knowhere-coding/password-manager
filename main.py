@@ -4,7 +4,7 @@ import pwinput
 import pyperclip
 import time
 import os
-from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, makeBackup, systemMessage
+from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, createBackup, createPrintLayout, systemMessage
 from database import checkMaster
 from initialization import initialization
 from passwordManagement import AESkey
@@ -79,10 +79,15 @@ while True:
         pyperclip.copy("")  # clear clipboard
         showAllAccounts(AES_key)
         start = time.time()
-    elif option == "6": # make backup
+    elif option == "6": # create backup
         option = ""
         pyperclip.copy("") # clear clipboard
-        makeBackup()
+        createBackup()
+        start = time.time()
+    elif option == "7": # create print layout
+        option = ""
+        pyperclip.copy("")
+        createPrintLayout(AES_key)
         start = time.time()
     elif option == "Q" or option == "q": # quit
         pyperclip.copy("")  # clear clipboard
