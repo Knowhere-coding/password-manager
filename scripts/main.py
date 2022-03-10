@@ -1,10 +1,9 @@
 import sys
-from art import tprint
 import pwinput
 import pyperclip
 import time
 import os
-from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, createBackup, createPrintLayout, systemMessage
+from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, createBackup, createPrintLayout
 from database import checkMaster
 from initialization import initialization
 from passwordManagement import AESkey

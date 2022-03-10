@@ -5,12 +5,10 @@ import os
 from datetime import datetime, timedelta
 from colorama import init
 from termcolor import colored
-from art import tprint
 import webbrowser
 import textFile
 from passwordManagement import createNewPassword
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getColumnData, getRowData
-from csvHandling import readCsvDataDict
 from printLayout import writeDataToExcel
 
 # initialize termcolor to work on windows

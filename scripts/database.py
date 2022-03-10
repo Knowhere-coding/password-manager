@@ -25,7 +25,7 @@ def checkMaster(masterUsername, masterPassword, AES_key):
     error = False
 
     # check AES_key
-    saveDecryptFile("data/AES_key.txt.enc", AES_key)
+    saveDecryptFile("../data/AES_key.txt.enc", AES_key)
     with open("data/AES_key.txt") as file:
         try:
             text = file.read()
@@ -38,7 +38,7 @@ def checkMaster(masterUsername, masterPassword, AES_key):
 
     if text == AES_key:
         # check master account data
-        decryptFile("data/master_account_data.csv.enc", AES_key)
+        decryptFile("../data/master_account_data.csv.enc", AES_key)
         with open("data/master_account_data.csv") as csvDataFile:
             csvReader = csv.reader(csvDataFile, delimiter=',')
             for row in csvReader:
@@ -53,7 +53,7 @@ def checkMaster(masterUsername, masterPassword, AES_key):
 def checkMasterPassword(masterPassword, AES_key):
     masterPassword = sha512(masterPassword)
 
-    decryptFile("data/master_account_data.csv.enc", AES_key)
+    decryptFile("../data/master_account_data.csv.enc", AES_key)
     with open("data/master_account_data.csv") as csvDataFile:
         csvReader = csv.reader(csvDataFile, delimiter=',')
         for row in csvReader:

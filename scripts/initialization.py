@@ -6,7 +6,8 @@ from fileEncryption import hideFile
 
 # initialization (create Username/Password), build directories
 def initialization():
-    if os.path.isdir("data") and os.path.isfile("data/AES_key.txt.enc") and os.path.isfile("data/master_account_data.csv.enc") and os.path.isfile("data/account_data.csv.enc"):
+    if os.path.isdir("../data") and os.path.isfile("../data/AES_key.txt.enc") and os.path.isfile(
+            "../data/master_account_data.csv.enc") and os.path.isfile("../data/account_data.csv.enc"):
         return False, "", ""
     else:
         print(" You need to setup your Passwordmanager!")
@@ -33,13 +34,13 @@ def initialization():
         while not pPassword.match(masterPassword) or "," in masterPassword:
             masterPassword = input(" Please provide a valid password (8-32 chars, (char,num,specialchar)): ")
 
-        if not os.path.isdir("data"):
-            os.mkdir("data")
-            hideFile("data")
+        if not os.path.isdir("../data"):
+            os.mkdir("../data")
+            hideFile("../data")
 
-        if not os.path.isdir("backup"):
-            os.mkdir("backup")
-            hideFile("backup")
+        if not os.path.isdir("../backup"):
+            os.mkdir("../backup")
+            hideFile("../backup")
 
         createMasterAccountDatabase(masterUsername, masterPassword)
         return True, masterUsername, masterPassword
