@@ -10,6 +10,7 @@ import textFile
 from passwordManagement import createNewPassword
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getColumnData, getRowData
 from printLayout import writeDataToExcel
+from fileEncryption import hideFile
 
 # initialize termcolor to work on windows
 init()
@@ -346,7 +347,7 @@ def showAllAccounts(AES_key):
 # option 6 - make backup
 def createBackup():
     global systemMessage
-    defaultPath = os.getcwd() + "\\backup"
+    defaultPath = os.getcwd() + "/backup"
 
     print(" Do you want to specify a backup destination? (Y/N):".format())
     choice = choicePrompt()
@@ -362,6 +363,9 @@ def createBackup():
             print(" The given destination path is not accessible, please specify a different path!")
             createBackup()
     else:
+        if not os.path.isdir(defaultPath):
+            os.mkdir(defaultPath)
+            hideFile(defaultPath)
         backup(defaultPath)
         systemMessage = " The backup was saved!"
         os.startfile(defaultPath)
@@ -370,6 +374,6 @@ def createBackup():
 # option 7 - print layout
 def createPrintLayout(AES_key):
     templateFilePath = "print_layout/printLayout.xlsx"
-    dataFilePath = "data/account_data.csv"
+    dataFilePath = "/data/account_data.csv"
 
     writeDataToExcel(templateFilePath, dataFilePath, AES_key)

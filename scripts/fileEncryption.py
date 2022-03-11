@@ -21,34 +21,29 @@ def decrypt(cipherText, key):
 
 # write encrypted text to file and delete decrypted file
 def encryptFile(fileName, key):
-    with open(fileName, 'rb') as file:
+    with open(os.getcwd() + fileName, 'rb') as file:
         text = file.read()
     enc = encrypt(text, key)
-    with open(fileName + ".enc", 'wb') as file:
+    with open(os.getcwd() + fileName + ".enc", 'wb') as file:
         file.write(enc)
-    os.remove(fileName)
-    hideFile(fileName + ".enc")
+    os.remove(os.getcwd() + fileName)
+    hideFile(os.getcwd() + fileName + ".enc")
 
 
 # write decrypted text to file and delete .enc file
 def decryptFile(fileName, key):
-    with open(fileName, 'rb') as file:
+    with open(os.getcwd() + fileName, 'rb') as file:
         cipherText = file.read()
     dec = decrypt(cipherText, key)
-    with open(fileName[:-4], 'wb') as file:
+    with open(os.getcwd() + fileName[:-4], 'wb') as file:
         file.write(dec)
-    os.remove(fileName)
+    os.remove(os.getcwd() + fileName)
 
 
 # decrypt file w/o deleting .enc file
 def saveDecryptFile(fileName, key):
-    with open(fileName, 'rb') as file:
+    with open(os.getcwd() + fileName, 'rb') as file:
         cipherText = file.read()
     dec = decrypt(cipherText, key)
-    with open(fileName[:-4], 'wb') as file:
+    with open(os.getcwd() + fileName[:-4], 'wb') as file:
         file.write(dec)
-
-
-# encryptFile("data/account_data.csv", "5e255f067953623c8b388b4459e13f97")
-# decryptFile("data/account_data.csv.enc", "5e255f067953623c8b388b4459e13f97")
-# 55501786742257113378764546529932
