@@ -199,7 +199,13 @@ def showDatabase(AES_key, sortedBy=1):
     entries = []
 
     for row in readCsvData("/data/account_data.csv", AES_key)[1:]:
+        # replace password with *
         row[5] = "*"*len(row[5])
+
+        # shorten url
+        if len(row[2]) > 34:
+            row[2] = "{}...".format(row[2][:34])
+
         entries.append(row)
     entries.sort(key=lambda entries: entries[sortedBy])
     for entry in entries:

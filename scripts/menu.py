@@ -184,7 +184,7 @@ def createAccount(AES_key):
     siteName = input(" > ")
 
     # url
-    print(" Please provide the {} (e.g. www.example.com) to the site:".format(colored("url", "green")))
+    print(" Please provide the {} (e.g. www.example.com/login) to the site:".format(colored("login url", "green")))
     url = input(" > ")
 
     # username

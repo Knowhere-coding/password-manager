@@ -10,7 +10,7 @@ from passwordManagement import AESkey
 import textFile
 
 # resize terminal window
-os.system("mode con cols=200 lines=50")
+os.system("mode con cols=220 lines=50")
 
 # show logo
 print(textFile.logo)
