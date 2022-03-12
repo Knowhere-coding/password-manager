@@ -148,6 +148,8 @@ def findData(searchingField, searchingValue, AES_key, output=None):
         output = ["ID", "siteName", "username", "email", "password", "category"]
     accountData = PrettyTable()
     accountData.field_names = output
+    accountData.align = "l"
+    accountData.align["ID"] = "r"
     results = []
     indices = []
     outputRows = []
@@ -195,7 +197,9 @@ def changeData(ID, fieldName, changeValue, AES_key):
 # option 5 - show all database entries sorted
 def showDatabase(AES_key, sortedBy=1):
     database = PrettyTable()
-    database.field_names = ["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"]
+    database.field_names = ["ID", "siteName", "url", "username", "email", "password", "changeDate", "exp.", "category"]
+    database.align = "l"
+    database.align["ID"] = "r"
     entries = []
 
     for row in readCsvData("/data/account_data.csv", AES_key)[1:]:
