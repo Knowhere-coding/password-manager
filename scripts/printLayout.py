@@ -3,7 +3,7 @@ from datetime import datetime
 import re
 from csvHandling import readCsvDataWithoutHead
 import menu
-import pwinput
+from termcolor import colored
 
 
 def writeDataToExcel(templateFilePath, dataFilePath, AES_key):
@@ -27,16 +27,18 @@ def writeDataToExcel(templateFilePath, dataFilePath, AES_key):
         ws.range((rowAnchor, columnAnchor)).value = rows
 
         # Save file
-        dstPath = "print_layout/"
-        date = re.sub("\.\d+", "", str(datetime.now())).replace("-", "").replace(" ", "_").replace(":", "")
-        fileName = date + "_passwordList.xlsx"
-        wb.save(dstPath + fileName)
-
-        pwinput.pwinput(prompt=" Press enter to continue!", mask="")
-        wb.close()
-
-        # Quit Excel
-        xl_app.quit()
+        print(" Do you want to {} the print layout? (Y/N)".format(colored("save", "green")))
+        choice = True if input(" > ").upper() == "Y" else False
+        if choice:
+            dstPath = "print_layout/"
+            date = re.sub("\.\d+", "", str(datetime.now())).replace("-", "").replace(" ", "_").replace(":", "")
+            fileName = date + "_passwordList.xlsx"
+            wb.save(dstPath + fileName)
+        try:
+            wb.close()
+            xl_app.quit()
+        except Exception:
+            menu.systemMessage = " Please do not close Excel!"
 
     except Exception as ex:
-        menu.systemMessage = "Error while writing data to excel!"
+        menu.systemMessage = " Error while writing data to excel!"

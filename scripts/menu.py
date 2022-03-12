@@ -227,7 +227,7 @@ def deleteAccount(AES_key):
             systemMessage = " The ID doesn't exists!"
             return
 
-        print(" Are you sure you want to {} the {} account! (Y/N):".format(colored("delete", "red"), colored(getRowData(ID, AES_key)["siteName"], "green")))
+        print(" Are you sure you want to {} the {} account? (Y/N):".format(colored("delete", "red"), colored(getRowData(ID, AES_key)["siteName"], "green")))
         choice = choicePrompt()
         if choice:
             if passwordBarrier(AES_key):
@@ -325,7 +325,7 @@ def changeAccount(AES_key):
         else:
             print(" Please provide the new {}:".format(colored(fieldName, "green")))
             changeValue = input(" > ")
-        print(" Are you sure you want to {} the {} of the {} account! (Y/N):".format(colored("change", "red"), colored(fieldName, "green"), colored(getRowData(ID, AES_key)["siteName"], "red")))
+        print(" Are you sure you want to {} the {} of the {} account? (Y/N):".format(colored("change", "red"), colored(fieldName, "green"), colored(getRowData(ID, AES_key)["siteName"], "red")))
         choice = choicePrompt()
 
         if choice:
