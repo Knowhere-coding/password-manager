@@ -52,6 +52,7 @@ while True:
         pyperclip.copy("")  # clear clipboard
         print(" You have been logged out due to inactivity!")
         time.sleep(10)
+        os.system("cls")
         sys.exit()
     elif option == "1": # create account
         option = ""

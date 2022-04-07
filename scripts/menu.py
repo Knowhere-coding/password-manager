@@ -374,6 +374,4 @@ def createBackup():
 # option 7 - print layout
 def createPrintLayout(AES_key):
     templateFilePath = "print_layout/printLayout.xlsx"
-    dataFilePath = "/data/account_data.csv"
-
-    writeDataToExcel(templateFilePath, dataFilePath, AES_key)
+    writeDataToExcel(templateFilePath, AES_key)

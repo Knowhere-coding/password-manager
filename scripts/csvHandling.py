@@ -1,6 +1,5 @@
 import csv
 import os
-
 from fileEncryption import encryptFile, decryptFile
 import menu
 

@@ -3,7 +3,6 @@ import os
 import re
 from datetime import datetime
 from prettytable import PrettyTable
-from passwordManagement import AESkey, sha512
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
 from fileHandling import createZipFile
 from csvHandling import readCsvData, readCsvDataDict, writeCsvData
@@ -21,7 +20,6 @@ def databaseStatus(AES_key):
 
 # validate the master account data
 def checkMaster(masterUsername, masterPassword, AES_key):
-    masterPassword = sha512(masterPassword)
     error = False
 
     # check AES_key
@@ -51,41 +49,13 @@ def checkMaster(masterUsername, masterPassword, AES_key):
 
 # check master password for the password barrier when changing/deleting data from the database
 def checkMasterPassword(masterPassword, AES_key):
-    masterPassword = sha512(masterPassword)
-
     decryptFile("/data/master_account_data.csv.enc", AES_key)
     with open(os.getcwd() + "/data/master_account_data.csv") as csvDataFile:
         csvReader = csv.reader(csvDataFile, delimiter=',')
         for row in csvReader:
             status = row[1] == masterPassword
     encryptFile("/data/master_account_data.csv", AES_key)
-
     return status
-
-
-# initialization - create master account database .csv file
-def createMasterAccountDatabase(masterUsername, masterPassword):
-    AES_key = AESkey(masterPassword)
-    masterPassword = sha512(masterPassword)
-
-    with open(os.getcwd() + "/data/master_account_data.csv", mode="w", newline="") as csvDataFile:
-        csv.writer(csvDataFile, delimiter=",").writerows([["masterUsername", "masterPassword"], [masterUsername, masterPassword]])
-    encryptFile("/data/master_account_data.csv", AES_key)
-
-    with open(os.getcwd() + "/data/AES_key.txt", mode="w") as file:
-        file.write(AES_key)
-    encryptFile("/data/AES_key.txt", AES_key)
-
-    menu.systemMessage = " All master data stored!"
-    createAccountDatabase(AES_key)
-
-
-# initialization - create account database .csv file
-def createAccountDatabase(AES_key):
-    with open(os.getcwd() + "/data/account_data.csv", mode="w", newline="") as csvDataFile:
-        csv.writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"])
-    encryptFile("/data/account_data.csv", AES_key)
-    menu.systemMessage = " Account database created!"
 
 
 # get all indices of the entries of the database

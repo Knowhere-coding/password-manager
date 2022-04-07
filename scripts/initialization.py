@@ -1,7 +1,10 @@
 import os
+import csv
 import re
-from database import createMasterAccountDatabase
 from fileEncryption import hideFile
+from passwordManagement import AESkey
+from fileEncryption import encryptFile
+import menu
 
 
 # initialization (create Username/Password), build directories
@@ -44,3 +47,27 @@ def initialization():
 
         createMasterAccountDatabase(masterUsername, masterPassword)
         return True, masterUsername, masterPassword
+
+
+# initialization - create master account database .csv file
+def createMasterAccountDatabase(masterUsername, masterPassword):
+    AES_key = AESkey(masterPassword)
+
+    with open(os.getcwd() + "/data/master_account_data.csv", mode="w", newline="") as csvDataFile:
+        csv.writer(csvDataFile, delimiter=",").writerows([["masterUsername", "masterPassword"], [masterUsername, masterPassword]])
+    encryptFile("/data/master_account_data.csv", AES_key)
+
+    with open(os.getcwd() + "/data/AES_key.txt", mode="w") as file:
+        file.write(AES_key)
+    encryptFile("/data/AES_key.txt", AES_key)
+
+    menu.systemMessage = " All master data stored!"
+    createAccountDatabase(AES_key)
+
+
+# initialization - create account database .csv file
+def createAccountDatabase(AES_key):
+    with open(os.getcwd() + "/data/account_data.csv", mode="w", newline="") as csvDataFile:
+        csv.writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"])
+    encryptFile("/data/account_data.csv", AES_key)
+    menu.systemMessage = " Account database created!"

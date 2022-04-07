@@ -6,10 +6,32 @@ import menu
 from termcolor import colored
 
 
-def writeDataToExcel(templateFilePath, dataFilePath, AES_key):
-    try:
-        rows = readCsvDataWithoutHead(dataFilePath, AES_key)
+def getAccountData(AES_key):
+    dataFilePath = "/data/account_data.csv"
+    accountData = readCsvDataWithoutHead(dataFilePath, AES_key)
+    spacer = ["" for _ in range(8)]
+    data = []
+    temp = ""
+    for row in accountData:
+        row.pop(7)
 
+    accountData.sort(key=lambda accountData: accountData[7])
+
+    for i in range(len(accountData)):
+        if accountData[i][7] != temp:
+            temp = accountData[i][7]
+            data.append(spacer)
+        data.append(accountData[i])
+    return data
+
+
+def getMasterData(AES_key):
+    dataFilePath = "/data/master_account_data.csv"
+    return readCsvDataWithoutHead(dataFilePath, AES_key)[0]
+
+
+def writeDataToExcel(templateFilePath, AES_key):
+    try:
         # Start Visible Excel
         xl_app = xw.App(visible=True, add_book=False)
 
@@ -19,12 +41,14 @@ def writeDataToExcel(templateFilePath, dataFilePath, AES_key):
         # Assign the sheet holding the template table to a variable
         ws = wb.sheets("Password List")
 
-        # First cell of the template (blank) table
-        rowAnchor = 3
-        columnAnchor = 1
+        # insert master data
+        masterData = getMasterData(AES_key)
+        ws.range((2, 3)).value = masterData[1]
+        ws.range((2, 5)).value = masterData[0]
 
-        # Insert rows
-        ws.range((rowAnchor, columnAnchor)).value = rows
+        # insert account data rows
+        accountData = getAccountData(AES_key)
+        ws.range((4, 1)).value = accountData
 
         # Save file
         print(" Do you want to {} the print layout? (Y/N)".format(colored("save", "green")))
@@ -41,4 +65,4 @@ def writeDataToExcel(templateFilePath, dataFilePath, AES_key):
             menu.systemMessage = " Please do not close Excel!"
 
     except Exception as ex:
-        menu.systemMessage = " Error while writing data to excel!"
+            menu.systemMessage = " Error while writing data to excel!"

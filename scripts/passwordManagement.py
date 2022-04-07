@@ -4,11 +4,6 @@ from random import choice, randint
 from sympy import *
 
 
-# master password hash
-def sha512(password):
-    return hashlib.sha512(password.encode('utf-8')).hexdigest()
-
-
 # create AES key for file encryption from master password hash
 def AESkey(password):
     return hashlib.sha256(password.encode('utf-8')).hexdigest()[23:55]
