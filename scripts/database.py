@@ -1,6 +1,6 @@
-import csv
-import os
-import re
+from csv import reader
+from os import getcwd, remove
+from re import sub
 from datetime import datetime
 from prettytable import PrettyTable
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
@@ -24,21 +24,21 @@ def checkMaster(masterUsername, masterPassword, AES_key):
 
     # check AES_key
     saveDecryptFile("/data/AES_key.txt.enc", AES_key)
-    with open(os.getcwd() + "/data/AES_key.txt") as file:
+    with open(getcwd() + "/data/AES_key.txt") as file:
         try:
             text = file.read()
         except UnicodeDecodeError:
             error = True
 
-    os.remove(os.getcwd() + "/data/AES_key.txt")
+    remove(getcwd() + "/data/AES_key.txt")
     if error:
         return False
 
     if text == AES_key:
         # check master account data
         decryptFile("/data/master_account_data.csv.enc", AES_key)
-        with open(os.getcwd() + "/data/master_account_data.csv") as csvDataFile:
-            csvReader = csv.reader(csvDataFile, delimiter=',')
+        with open(getcwd() + "/data/master_account_data.csv") as csvDataFile:
+            csvReader = reader(csvDataFile, delimiter=',')
             for row in csvReader:
                 status = masterUsername == row[0] and masterPassword == row[1]
         encryptFile("/data/master_account_data.csv", AES_key)
@@ -50,8 +50,8 @@ def checkMaster(masterUsername, masterPassword, AES_key):
 # check master password for the password barrier when changing/deleting data from the database
 def checkMasterPassword(masterPassword, AES_key):
     decryptFile("/data/master_account_data.csv.enc", AES_key)
-    with open(os.getcwd() + "/data/master_account_data.csv") as csvDataFile:
-        csvReader = csv.reader(csvDataFile, delimiter=',')
+    with open(getcwd() + "/data/master_account_data.csv") as csvDataFile:
+        csvReader = reader(csvDataFile, delimiter=',')
         for row in csvReader:
             status = row[1] == masterPassword
     encryptFile("/data/master_account_data.csv", AES_key)
@@ -96,7 +96,7 @@ def storeData(siteName, url, username, email, password, expiration, category, AE
             status = False
             break
     if status:
-        rows.append([ID, siteName, url, username, email, password, re.sub("\.\d+", "", str(datetime.now())), expiration, category])
+        rows.append([ID, siteName, url, username, email, password, sub("\.\d+", "", str(datetime.now())), expiration, category])
         writeCsvData("/data/account_data.csv", rows, "s", AES_key)
     return status
 
@@ -157,7 +157,7 @@ def changeData(ID, fieldName, changeValue, AES_key):
         if row["ID"] == str(ID):
             if fieldName.lower() == "password":
                 row[fieldName] = changeValue
-                row["changeDate"] = re.sub("\.\d+", "", str(datetime.now()))
+                row["changeDate"] = sub("\.\d+", "", str(datetime.now()))
             else:
                 row[fieldName] = changeValue
         newRows.append(list(row.values()))

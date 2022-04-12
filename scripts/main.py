@@ -1,19 +1,19 @@
-import sys
-import pwinput
-import pyperclip
-import time
-import os
+from sys import exit
+from pwinput import pwinput
+from pyperclip import copy
+from time import sleep, time
+from os import system
 from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, createBackup, createPrintLayout
 from database import checkMaster
 from initialization import initialization
 from passwordManagement import AESkey
-import textFile
+from textFile import logo
 
 # resize terminal window
-os.system("mode con cols=220 lines=50")
+system("mode con cols=240 lines=50")
 
 # show logo
-print(textFile.logo)
+print(logo)
 
 # initialization
 status, masterUsername, masterPassword = initialization()
@@ -26,8 +26,8 @@ status, masterUsername, masterPassword = initialization()
 
 # for terminal usage:
 if not status:
-    masterUsername = pwinput.pwinput(prompt=" Please enter the master username: ")
-    masterPassword = pwinput.pwinput(prompt=" Please enter the master password: ")
+    masterUsername = pwinput(prompt=" Please enter the master username: ")
+    masterPassword = pwinput(prompt=" Please enter the master password: ")
 
 AES_key = AESkey(masterPassword)
 
@@ -36,9 +36,9 @@ if checkMaster(masterUsername, masterPassword, AES_key):
     systemMessage = " You're in!"
 else:
     print(" Wrong master username or password!")
-    time.sleep(10)
-    os.system("cls")
-    sys.exit()
+    sleep(10)
+    system("cls")
+    exit()
 
 # default overlay
 option, start = optionMenu()
@@ -46,53 +46,53 @@ option, start = optionMenu()
 # handle options
 while True:
     # stop inactivity timer
-    stop = time.time()
+    stop = time()
 
     if stop - start > 60:  # inactivity time in sec.
-        pyperclip.copy("")  # clear clipboard
+        copy("")  # clear clipboard
         print(" You have been logged out due to inactivity!")
-        time.sleep(10)
-        os.system("cls")
-        sys.exit()
+        sleep(10)
+        system("cls")
+        exit()
     elif option == "1": # create account
         option = ""
-        pyperclip.copy("")  # clear clipboard
+        copy("")  # clear clipboard
         createAccount(AES_key)
-        start = time.time()
+        start = time()
     elif option == "2": # delete account data
         option = ""
-        pyperclip.copy("")  # clear clipboard
+        copy("")  # clear clipboard
         deleteAccount(AES_key)
-        start = time.time()
+        start = time()
     elif option == "3": # find account data
         option = ""
-        pyperclip.copy("")  # clear clipboard
+        copy("")  # clear clipboard
         findAccounts(AES_key)
-        start = time.time()
+        start = time()
     elif option == "4": # change account data
         option = ""
-        pyperclip.copy("")  # clear clipboard
+        copy("")  # clear clipboard
         changeAccount(AES_key)
-        start = time.time()
+        start = time()
     elif option == "5": # show all accounts
         option = ""
-        pyperclip.copy("")  # clear clipboard
+        copy("")  # clear clipboard
         showAllAccounts(AES_key)
-        start = time.time()
+        start = time()
     elif option == "6": # create backup
         option = ""
-        pyperclip.copy("") # clear clipboard
+        copy("") # clear clipboard
         createBackup()
-        start = time.time()
+        start = time()
     elif option == "7": # create print layout
         option = ""
-        pyperclip.copy("")
+        copy("")
         createPrintLayout(AES_key)
-        start = time.time()
+        start = time()
     elif option == "Q" or option == "q": # quit
-        pyperclip.copy("")  # clear clipboard
-        os.system("cls")
-        sys.exit()
+        copy("")  # clear clipboard
+        system("cls")
+        exit()
     else:
         if option != "":
             findAccounts(AES_key, True, option)

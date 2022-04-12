@@ -1,5 +1,5 @@
-import csv
-import os
+from csv import reader, DictReader, writer
+from os import getcwd
 from fileEncryption import encryptFile, decryptFile
 import menu
 
@@ -8,8 +8,8 @@ import menu
 def readCsvData(fileName, AES_key):
     rows = []
     decryptFile((fileName + ".enc"), AES_key)
-    with open(os.getcwd() + fileName, mode="r", newline="") as csvDataFile:
-        csvReader = csv.reader(csvDataFile, delimiter=",")
+    with open(getcwd() + fileName, mode="r", newline="") as csvDataFile:
+        csvReader = reader(csvDataFile, delimiter=",")
         for row in csvReader:
             rows.append(row)
     encryptFile(fileName, AES_key)
@@ -24,8 +24,8 @@ def readCsvDataWithoutHead(fileName, AES_key):
 def readCsvDataDict(fileName, AES_key):
     rows = []
     decryptFile((fileName + ".enc"), AES_key)
-    with open(os.getcwd() + fileName, mode="r", newline="") as csvDataFile:
-        csvReader = csv.DictReader(csvDataFile, delimiter=",")
+    with open(getcwd() + fileName, mode="r", newline="") as csvDataFile:
+        csvReader = DictReader(csvDataFile, delimiter=",")
         for row in csvReader:
             rows.append(row)
     encryptFile(fileName, AES_key)
@@ -35,8 +35,8 @@ def readCsvDataDict(fileName, AES_key):
 # write .csv file data
 def writeCsvData(fileName, rows, case, AES_key):
     decryptFile((fileName + ".enc"), AES_key)
-    with open(os.getcwd() + fileName, mode="w", newline="") as csvDataFile:
-        csvWriter = csv.writer(csvDataFile, delimiter=",")
+    with open(getcwd() + fileName, mode="w", newline="") as csvDataFile:
+        csvWriter = writer(csvDataFile, delimiter=",")
         for row in rows:
             csvWriter.writerow(row)
         if case == "d":

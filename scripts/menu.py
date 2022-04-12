@@ -1,12 +1,12 @@
-import pwinput
-import pyperclip
-import time
-import os
+from pwinput import pwinput
+from pyperclip import copy
+from time import time
+from os import system, getcwd, startfile, path, mkdir
 from datetime import datetime, timedelta
 from colorama import init
 from termcolor import colored
-import webbrowser
-import textFile
+from webbrowser import open_new_tab
+from textFile import logo
 from passwordManagement import createNewPassword
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getColumnData, getRowData
 from printLayout import writeDataToExcel
@@ -20,13 +20,13 @@ systemMessage = ""
 # default overlay
 def optionMenu():
     global systemMessage
-    os.system("cls")
+    system("cls")
 
     # show logo
-    print(textFile.logo)
+    print(logo)
 
     # start inactivity timer
-    start = time.time()
+    start = time()
 
     # show system message
     if systemMessage != "":
@@ -57,7 +57,7 @@ def choicePrompt():
 
 # copy data to clipboard
 def copyToClipboard(msg):
-    pyperclip.copy(msg)
+    copy(msg)
     print('-' * 47)
     print("")
     print(" Your {} has been copied to your {}".format(colored("password", "green"), colored("clipboard", "cyan")))
@@ -72,7 +72,7 @@ def openUrl(url):
     choice = choicePrompt()
 
     if choice:
-        webbrowser.open_new_tab("https://" + url)
+        open_new_tab("https://" + url)
 
 
 # create/change password
@@ -89,7 +89,7 @@ def passwordOption():
     # provide own password
     else:
         print(" Please provide your own {}:".format(colored("password", "green")))
-        password = pwinput.pwinput(prompt=" > ")
+        password = pwinput(prompt=" > ")
 
     return password
 
@@ -169,7 +169,7 @@ def checkExpirationDate(ID, changeDate, expiration, AES_key):
 
 # password barrier for changing/deleting data from the database
 def passwordBarrier(AES_key):
-    masterPassword = pwinput.pwinput(prompt=" Please provide your master password: ")
+    masterPassword = pwinput(prompt=" Please provide your master password: ")
     return checkMasterPassword(masterPassword, AES_key)
 
 
@@ -260,7 +260,7 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
             output = ["ID", "siteName", "username", "email", "password", "expiration", "category"]
         elif searchingField == "password":
             print(" Please provide the {} you wanna search for:".format(colored(searchingField, "green")))
-            searchingValue = pwinput.pwinput(prompt=" > ")
+            searchingValue = pwinput(prompt=" > ")
         else:
             if searchingField == "url":
                 output = ["ID", "siteName", "url", "username", "email", "password", "category"]
@@ -341,13 +341,13 @@ def changeAccount(AES_key):
 def showAllAccounts(AES_key):
     if databaseStatus(AES_key):
         showDatabase(AES_key)
-    pwinput.pwinput(prompt=" Press enter to continue!", mask="")
+    pwinput(prompt=" Press enter to continue!", mask="")
 
 
 # option 6 - make backup
 def createBackup():
     global systemMessage
-    defaultPath = os.getcwd() + "/backup"
+    defaultPath = getcwd() + "/backup"
 
     print(" Do you want to specify a backup destination? (Y/N):".format())
     choice = choicePrompt()
@@ -358,17 +358,17 @@ def createBackup():
         backupStatus = backup(dstPath)
         if backupStatus:
             systemMessage = " The backup was saved!"
-            os.startfile(dstPath)
+            startfile(dstPath)
         else:
             print(" The given destination path is not accessible, please specify a different path!")
             createBackup()
     else:
-        if not os.path.isdir(defaultPath):
-            os.mkdir(defaultPath)
+        if not path.isdir(defaultPath):
+            mkdir(defaultPath)
             hideFile(defaultPath)
         backup(defaultPath)
         systemMessage = " The backup was saved!"
-        os.startfile(defaultPath)
+        startfile(defaultPath)
 
 
 # option 7 - print layout

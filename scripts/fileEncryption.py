@@ -1,6 +1,6 @@
 from Crypto import Random
 from Crypto.Cipher import AES
-import os
+from os import getcwd, remove
 from fileHandling import hideFile
 
 
@@ -21,29 +21,29 @@ def decrypt(cipherText, key):
 
 # write encrypted text to file and delete decrypted file
 def encryptFile(fileName, key):
-    with open(os.getcwd() + fileName, 'rb') as file:
+    with open(getcwd() + fileName, 'rb') as file:
         text = file.read()
     enc = encrypt(text, key)
-    with open(os.getcwd() + fileName + ".enc", 'wb') as file:
+    with open(getcwd() + fileName + ".enc", 'wb') as file:
         file.write(enc)
-    os.remove(os.getcwd() + fileName)
-    hideFile(os.getcwd() + fileName + ".enc")
+    remove(getcwd() + fileName)
+    hideFile(getcwd() + fileName + ".enc")
 
 
 # write decrypted text to file and delete .enc file
 def decryptFile(fileName, key):
-    with open(os.getcwd() + fileName, 'rb') as file:
+    with open(getcwd() + fileName, 'rb') as file:
         cipherText = file.read()
     dec = decrypt(cipherText, key)
-    with open(os.getcwd() + fileName[:-4], 'wb') as file:
+    with open(getcwd() + fileName[:-4], 'wb') as file:
         file.write(dec)
-    os.remove(os.getcwd() + fileName)
+    remove(getcwd() + fileName)
 
 
 # decrypt file w/o deleting .enc file
 def saveDecryptFile(fileName, key):
-    with open(os.getcwd() + fileName, 'rb') as file:
+    with open(getcwd() + fileName, 'rb') as file:
         cipherText = file.read()
     dec = decrypt(cipherText, key)
-    with open(os.getcwd() + fileName[:-4], 'wb') as file:
+    with open(getcwd() + fileName[:-4], 'wb') as file:
         file.write(dec)

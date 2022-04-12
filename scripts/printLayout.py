@@ -1,6 +1,6 @@
-import xlwings as xw
+from xlwings import App
 from datetime import datetime
-import re
+from re import sub
 from csvHandling import readCsvDataWithoutHead
 import menu
 from termcolor import colored
@@ -33,7 +33,7 @@ def getMasterData(AES_key):
 def writeDataToExcel(templateFilePath, AES_key):
     try:
         # Start Visible Excel
-        xl_app = xw.App(visible=True, add_book=False)
+        xl_app = App(visible=True, add_book=False)
 
         # Open template file
         wb = xl_app.books.open(templateFilePath)
@@ -55,7 +55,7 @@ def writeDataToExcel(templateFilePath, AES_key):
         choice = True if input(" > ").upper() == "Y" else False
         if choice:
             dstPath = "print_layout/"
-            date = re.sub("\.\d+", "", str(datetime.now())).replace("-", "").replace(" ", "_").replace(":", "")
+            date = sub("\.\d+", "", str(datetime.now())).replace("-", "").replace(" ", "_").replace(":", "")
             fileName = date + "_passwordList.xlsx"
             wb.save(dstPath + fileName)
         try:
