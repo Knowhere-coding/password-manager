@@ -9,7 +9,7 @@ from webbrowser import open_new_tab
 from textFile import logo
 from passwordManagement import createNewPassword
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getColumnData, getRowData
-from printLayout import writeDataToExcel
+from printLayout import createPrintLayoutFile
 from fileEncryption import hideFile
 
 # initialize termcolor to work on windows
@@ -177,7 +177,7 @@ def passwordBarrier(AES_key):
 def createAccount(AES_key):
     # category
     print(" Choose the {} for your new account:".format(colored("category", "green")))
-    category = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "Banking", 7: "education", 8: "private", 9: "other"})
+    category = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "banking", 7: "education", 8: "private", 9: "other"})
 
     # site name
     print(" Please provide the {} (e.g. reddit) you want to create a new account for:".format(colored("site name", "green")))
@@ -253,7 +253,7 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
         # value
         if searchingField == "category":
             print(" Choose the {} you want to search for:".format(colored("category", "green")))
-            searchingValue = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "Banking", 7: "education", 8: "private", 9: "other"})
+            searchingValue = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "banking", 7: "education", 8: "private", 9: "other"})
         elif searchingField == "expiration":
             print(" Choose the {} you want to search for:".format(colored("expiration period (in days)", "green")))
             searchingValue = str(showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0}))
@@ -321,7 +321,7 @@ def changeAccount(AES_key):
             changeValue = showOptions({1: 1, 2: 7, 3: 30, 4: 90, 5: 365, 6: 0})
         elif fieldName == "category":
             print(" Choose the new {} for your account:".format(colored("category", "green")))
-            changeValue = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "Banking", 7: "education", 8: "private", 9: "other"})
+            changeValue = showOptions({1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "banking", 7: "education", 8: "private", 9: "other"})
         else:
             print(" Please provide the new {}:".format(colored(fieldName, "green")))
             changeValue = input(" > ")
@@ -374,4 +374,4 @@ def createBackup():
 # option 7 - print layout
 def createPrintLayout(AES_key):
     templateFilePath = "print_layout/printLayout.xlsx"
-    writeDataToExcel(templateFilePath, AES_key)
+    createPrintLayoutFile(templateFilePath, AES_key)
