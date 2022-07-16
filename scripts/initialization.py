@@ -54,7 +54,7 @@ def createMasterAccountDatabase(masterUsername, masterPassword):
     AES_key = AESkey(masterPassword)
 
     with open(getcwd() + "/data/master_account_data.csv", mode="w", newline="") as csvDataFile:
-        csv.writer(csvDataFile, delimiter=",").writerows([["masterUsername", "masterPassword"], [masterUsername, masterPassword]])
+        writer(csvDataFile, delimiter=",").writerows([["masterUsername", "masterPassword"], [masterUsername, masterPassword]])
     encryptFile("/data/master_account_data.csv", AES_key)
 
     with open(getcwd() + "/data/AES_key.txt", mode="w") as file:
@@ -68,6 +68,6 @@ def createMasterAccountDatabase(masterUsername, masterPassword):
 # initialization - create account database .csv file
 def createAccountDatabase(AES_key):
     with open(getcwd() + "/data/account_data.csv", mode="w", newline="") as csvDataFile:
-        csv.writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"])
+        writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"])
     encryptFile("/data/account_data.csv", AES_key)
     menu.systemMessage = " Account database created!"
