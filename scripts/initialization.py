@@ -1,7 +1,7 @@
 from os import getcwd, path, mkdir
 from csv import writer
 from re import compile
-from fileEncryption import hideFile
+from fileHandling import hideFile
 from passwordManagement import AESkey
 from fileEncryption import encryptFile
 import menu

@@ -10,7 +10,7 @@ from textFile import logo
 from passwordManagement import createNewPassword
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getColumnData, getRowData
 from printLayout import createPrintLayoutFile
-from fileEncryption import hideFile
+from fileHandling import hideFile
 
 # initialize termcolor to work on windows
 init()
