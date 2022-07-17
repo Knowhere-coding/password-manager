@@ -14,6 +14,9 @@ def createPrintLayoutFile(templateFilePath, AES_key):
         # Open template file
         wb = xl_app.books.open(templateFilePath)
 
+        # bring app to foreground
+        wb.app.activate(steal_focus=True)
+
         # add data to each sheet
         for sheet in wb.sheets:
             # insert account data
