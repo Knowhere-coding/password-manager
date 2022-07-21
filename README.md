@@ -58,21 +58,20 @@ See [requirements.txt](https://github.com/Knowhere-coding/password_manager/blob/
 <!-- requirements.txt file -->
 
 External libraries:
-  - art~=5.3
-  - colorama~=0.4.4
-  - termcolor~=1.1.0
-  - sympy~=1.8
-  - pwinput~=1.0.2
-  - prettytable~=2.2.1
-  - pycryptodome~=3.11.0
-  - pyperclip~=1.8.2
   - pip~=22.0.3
   - wheel~=0.37.1
   - cryptography~=35.0.0
   - lxml~=4.7.1
   - setuptools~=58.1.0
   - future~=0.18.2
+  - pywin32~=302
+  - pwinput~=1.0.2
+  - pyperclip~=1.8.2
+  - colorama~=0.4.4
+  - termcolor~=1.1.0
+  - prettytable~=2.2.1
   - xlwings~=0.26.3
+  - sympy~=1.9
 
 
         ©Copyright 2021 by Knowhere-coding
