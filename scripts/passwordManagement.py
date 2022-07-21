@@ -1,12 +1,6 @@
-from hashlib import sha256
 from string import ascii_letters, digits
 from random import choice, randint
 from sympy import isprime
-
-
-# create AES key for file encryption from master password hash
-def AESkey(password):
-    return sha256(password.encode('utf-8')).hexdigest()[23:55]
 
 
 # create a random password

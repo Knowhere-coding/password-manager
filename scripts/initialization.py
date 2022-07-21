@@ -2,15 +2,14 @@ from os import getcwd, path, mkdir
 from csv import writer
 from re import compile
 from fileHandling import hideFile
-from passwordManagement import AESkey
-from fileEncryption import encryptFile
+from fileEncryption import generateAndSaveAESkey, getAESkey, encryptFile
 import menu
 
 
 # initialization (create Username/Password), build directories
 def initialization():
     cwd = getcwd()
-    if path.isdir(cwd + "/data") and path.isfile(cwd + "/data/AES_key.txt.enc") and path.isfile(cwd + "/data/master_account_data.csv.enc") and path.isfile(cwd + "/data/account_data.csv.enc"):
+    if path.isdir(cwd + "/data") and path.isfile(cwd + "/data/AES.key.enc") and path.isfile(cwd + "/data/master_account_data.csv.enc") and path.isfile(cwd + "/data/account_data.csv.enc"):
         return False, "", ""
     else:
         print(" You need to setup your Passwordmanager!")
@@ -51,15 +50,12 @@ def initialization():
 
 # initialization - create master account database .csv file
 def createMasterAccountDatabase(masterUsername, masterPassword):
-    AES_key = AESkey(masterPassword)
+    generateAndSaveAESkey(masterPassword)
+    AES_key = getAESkey(masterPassword)
 
     with open(getcwd() + "/data/master_account_data.csv", mode="w", newline="") as csvDataFile:
         writer(csvDataFile, delimiter=",").writerows([["masterUsername", "masterPassword"], [masterUsername, masterPassword]])
     encryptFile("/data/master_account_data.csv", AES_key)
-
-    with open(getcwd() + "/data/AES_key.txt", mode="w") as file:
-        file.write(AES_key)
-    encryptFile("/data/AES_key.txt", AES_key)
 
     menu.systemMessage = " All master data stored!"
     createAccountDatabase(AES_key)

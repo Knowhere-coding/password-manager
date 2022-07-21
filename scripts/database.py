@@ -23,18 +23,18 @@ def checkMaster(masterUsername, masterPassword, AES_key):
     error = False
 
     # check AES_key
-    saveDecryptFile("/data/AES_key.txt.enc", AES_key)
-    with open(getcwd() + "/data/AES_key.txt") as file:
+    saveDecryptFile("/data/AES.key.enc", AES_key)
+    with open(getcwd() + "/data/AES.key") as file:
         try:
             text = file.read()
         except UnicodeDecodeError:
             error = True
 
-    remove(getcwd() + "/data/AES_key.txt")
+    remove(getcwd() + "/data/AES.key")
     if error:
         return False
 
-    if text == AES_key:
+    if bytes(text, "utf-8") == AES_key:
         # check master account data
         decryptFile("/data/master_account_data.csv.enc", AES_key)
         with open(getcwd() + "/data/master_account_data.csv") as csvDataFile:
