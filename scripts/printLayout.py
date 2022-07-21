@@ -59,8 +59,8 @@ def getMasterData(AES_key):
 
 def writeDataToExcel(ws, masterData, accountData):
     # insert master data
-    ws.range((2, 3)).value = masterData[1]
-    ws.range((2, 5)).value = masterData[0]
+    ws.range((2, 3)).value = masterData[0]
+    ws.range((2, 5)).value = masterData[1]
 
     # insert account data rows
     ws.range((4, 1)).value = accountData

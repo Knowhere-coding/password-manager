@@ -32,6 +32,7 @@ def main():
         masterPassword = pwinput(prompt=" Please enter the master password: ")
 
     AES_key = getAESkey(masterPassword)
+
     # check login
     if not checkMaster(masterUsername, masterPassword, AES_key):
         print(" Wrong master username or password!")
