@@ -2,6 +2,7 @@ from csv import reader
 from os import getcwd, remove
 from re import sub
 from datetime import datetime
+import cryptography.exceptions
 from prettytable import PrettyTable
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
 from fileHandling import createZipFile
@@ -20,31 +21,34 @@ def databaseStatus(AES_key):
 
 # validate the master account data
 def checkMaster(masterUsername, masterPassword, AES_key):
-    error = False
+    try:
+        error = False
 
-    # check AES_key
-    saveDecryptFile("/data/AES.key.enc", AES_key)
-    with open(getcwd() + "/data/AES.key") as file:
-        try:
-            text = file.read()
-        except UnicodeDecodeError:
-            error = True
+        # check AES_key
+        saveDecryptFile("/data/AES.key.enc", AES_key)
+        with open(getcwd() + "/data/AES.key") as file:
+            try:
+                text = file.read()
+            except UnicodeDecodeError:
+                error = True
 
-    remove(getcwd() + "/data/AES.key")
-    if error:
+        remove(getcwd() + "/data/AES.key")
+        if error:
+            return False
+
+        if bytes(text, "utf-8") == AES_key:
+            # check master account data
+            decryptFile("/data/master_account_data.csv.enc", AES_key)
+            with open(getcwd() + "/data/master_account_data.csv") as csvDataFile:
+                csvReader = reader(csvDataFile, delimiter=',')
+                for row in csvReader:
+                    status = masterUsername == row[0] and masterPassword == row[1]
+            encryptFile("/data/master_account_data.csv", AES_key)
+        else:
+            status = False
+        return status
+    except Exception:
         return False
-
-    if bytes(text, "utf-8") == AES_key:
-        # check master account data
-        decryptFile("/data/master_account_data.csv.enc", AES_key)
-        with open(getcwd() + "/data/master_account_data.csv") as csvDataFile:
-            csvReader = reader(csvDataFile, delimiter=',')
-            for row in csvReader:
-                status = masterUsername == row[0] and masterPassword == row[1]
-        encryptFile("/data/master_account_data.csv", AES_key)
-    else:
-        status = False
-    return status
 
 
 # check master password for the password barrier when changing/deleting data from the database
