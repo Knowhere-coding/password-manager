@@ -8,9 +8,10 @@ from termcolor import colored
 from webbrowser import open_new_tab
 from textFile import logo
 from passwordManagement import createNewPassword
-from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, backup, checkMasterPassword, getIndices, getColumnData, getRowData
+from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, checkMasterPassword, getIndices, getColumnData, getRowData
 from printLayout import createPrintLayoutFile
 from fileHandling import hideFile
+from backupHandling import createBackupFile
 
 # initialize termcolor to work on windows
 init()
@@ -347,7 +348,7 @@ def showAllAccounts(AES_key):
 # option 6 - make backup
 def createBackup():
     global systemMessage
-    defaultPath = getcwd() + "/backup"
+    defaultPath = getcwd() + "/backup/"
 
     print(" Do you want to specify a backup destination? (Y/N):".format())
     choice = choicePrompt()

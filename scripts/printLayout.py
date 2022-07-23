@@ -6,6 +6,7 @@ import menu
 from termcolor import colored
 
 
+# option 7 - create print layout
 def createPrintLayoutFile(templateFilePath, AES_key):
     try:
         # Start Visible Excel
@@ -75,6 +76,7 @@ def userPrompt(xl_app, wb, AES_key):
         date = sub("\.\d+", "", str(datetime.now())).replace("-", "").replace(" ", "_").replace(":", "")
         fileName = date + "_passwordList.xlsx"
         wb.save(dstPath + fileName, getMasterData(AES_key)[1])
+        menu.systemMessage = " Print Layout saved!"
     try:
         wb.close()
         xl_app.quit()

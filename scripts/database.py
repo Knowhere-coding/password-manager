@@ -5,7 +5,6 @@ from datetime import datetime
 import cryptography.exceptions
 from prettytable import PrettyTable
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
-from fileHandling import createZipFile
 from csvHandling import readCsvData, readCsvDataDict, writeCsvData
 import menu
 
@@ -189,12 +188,3 @@ def showDatabase(AES_key, sortedBy=1):
     for entry in entries:
         database.add_row(entry)
     print(database)
-
-
-# option 6 - make backup
-def backup(dst_path):
-    try:
-        createZipFile(dst_path)
-        return True
-    except FileNotFoundError:
-        return False

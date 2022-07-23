@@ -2,12 +2,13 @@ from sys import exit
 from pwinput import pwinput
 from pyperclip import copy
 from time import sleep, time
-from os import system
+from os import system, getcwd
 from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, createBackup, createPrintLayout
 from database import checkMaster
 from initialization import initialization
 from fileEncryption import getAESkey
 from textFile import logo
+from backupHandling import createAutomaticBackup
 
 
 def main():
@@ -39,6 +40,8 @@ def main():
         sleep(10)
         system("cls")
         exit()
+    # create automatic backup
+    createAutomaticBackup(getcwd() + "/backup/")
 
     # default overlay
     option, start = optionMenu()
