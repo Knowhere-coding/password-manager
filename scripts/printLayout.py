@@ -24,7 +24,7 @@ def createPrintLayoutFile(templateFilePath, AES_key):
             sheet.name = sheet.name[0].upper() + sheet.name[1:] + " List"
 
         # user prompt
-        userPrompt(xl_app, wb)
+        userPrompt(xl_app, wb, AES_key)
 
     except Exception as ex:
         try:
@@ -66,7 +66,7 @@ def writeDataToExcel(ws, masterData, accountData):
     ws.range((4, 1)).value = accountData
 
 
-def userPrompt(xl_app, wb):
+def userPrompt(xl_app, wb, AES_key):
     # Save file
     print(" Do you want to {} the print layout? (Y/N)".format(colored("save", "green")))
     choice = True if input(" > ").upper() == "Y" else False
@@ -74,7 +74,7 @@ def userPrompt(xl_app, wb):
         dstPath = "print_layout/"
         date = sub("\.\d+", "", str(datetime.now())).replace("-", "").replace(" ", "_").replace(":", "")
         fileName = date + "_passwordList.xlsx"
-        wb.save(dstPath + fileName)
+        wb.save(dstPath + fileName, getMasterData(AES_key)[1])
     try:
         wb.close()
         xl_app.quit()
