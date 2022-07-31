@@ -128,7 +128,7 @@ def findData(searchingField, searchingValue, AES_key, output=None):
     outputRows = []
 
     for row in readCsvDataDict("/data/account_data.csv", AES_key):
-        if row[searchingField].lower() == searchingValue.lower():
+        if searchingValue.lower() in row[searchingField].lower():
             results.append(row)
     if results:
         for row in results:
