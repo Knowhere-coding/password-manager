@@ -53,7 +53,7 @@ def main():
 
         if stop - start > 60:  # inactivity time in sec.
             copy("")  # clear clipboard
-            print(" You have been logged out due to inactivity!")
+            print("\n You have been logged out due to inactivity!")
             sleep(10)
             system("cls")
             exit()
