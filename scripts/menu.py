@@ -1,7 +1,7 @@
 from pwinput import pwinput
 from pyperclip import copy
 from time import time
-from os import system, getcwd, startfile, path, mkdir
+from os import system, getcwd, startfile, path, mkdir, listdir
 from datetime import datetime, timedelta
 from colorama import init
 from termcolor import colored
@@ -12,7 +12,7 @@ from database import storeData, deleteData, findData, changeData, showDatabase, 
     getIndices, getColumnData, getRowData
 from printLayout import createPrintLayoutFile
 from fileHandling import hideFile
-from backupHandling import createBackupFile
+from backupHandling import createBackupFile, loadBackupFile
 
 # initialize termcolor to work on windows
 init()
@@ -44,7 +44,7 @@ def optionMenu():
     print(" 3 - Find your {}".format(colored("account data", "cyan")))
     print(" 4 - Change your {}".format(colored("account data", "cyan")))
     print(" 5 - Show all your {}".format(colored("accounts", "cyan")))
-    print(" 6 - Create {}".format(colored("backup", "cyan")))
+    print(" 6 - {} menu".format(colored("Backup", "cyan")))
     print(" 7 - Create {}".format(colored("print layout", "cyan")))
     print(" Q - {}".format(colored("Exit", "cyan")))
     print('-' * 30)
@@ -368,26 +368,66 @@ def createBackup():
     global systemMessage
     defaultPath = getcwd() + "/backup/"
 
-    print("\n Do you want to specify a backup destination? (Y/N):".format())
-    choice = choicePrompt()
+    print('-' * 30)
+    print(" 1 - Create {}".format(colored("backup", "cyan")))
+    print(" 2 - Load {}".format(colored("backup", "cyan")))
+    print('-' * 30)
+    choice = input(" > ")
 
-    if choice:
-        print("\n Please specify the destination path you want to save the backup to:")
-        dstPath = input(" > ")
-        backupStatus = createBackupFile(dstPath)
-        if backupStatus:
-            systemMessage = " The backup was saved!"
-            startfile(dstPath)
+    if choice == "1":
+        print("\n Do you want to specify a backup destination? (Y/N):".format())
+        choice = choicePrompt()
+
+        if choice:
+            print("\n Please specify the destination path you want to save the backup to:")
+            dstPath = input(" > ")
+            backupStatus = createBackupFile(dstPath)
+            if backupStatus:
+                systemMessage = " The backup was saved!"
+                startfile(dstPath)
+            else:
+                print("\n The given destination path is not accessible, please specify a different path!")
+                createBackup()
         else:
-            print("\n The given destination path is not accessible, please specify a different path!")
-            createBackup()
+            if not path.isdir(defaultPath):
+                mkdir(defaultPath)
+                hideFile(defaultPath)
+            createBackupFile(defaultPath)
+            systemMessage = " The backup was saved!"
+            startfile(defaultPath)
+    elif choice == "2":
+        files = None
+        indices = []
+        dirPath = defaultPath
+
+        print(
+            "\n Please specify the path you want to load the backup from or press ENTER if the backup is in the default path:")
+        while not files:
+            userPath = input(" > ")
+            if userPath:
+                dirPath = userPath + "\\" if userPath[-1] != "\\" else userPath
+            try:
+                files = listdir(dirPath)
+            except FileNotFoundError:
+                print(" \n File path not found or empty!\n")
+
+        print("\n Please select an existing {} or press {} to return".format(colored("file", "green"),
+                                                                           colored("ENTER", "red")))
+        for i, file in enumerate(files):
+            indices.append(str(i))
+            backupAge = datetime.now() - datetime.fromtimestamp(path.getctime(dirPath + file))
+            print("   {} - {} {:4d} days ago".format(colored(i, "cyan"), file, backupAge.days))
+        userInput = input(" > ")
+
+        while userInput not in indices:
+            if not userInput:
+                return
+            print(" The index is not available, try again!")
+            userInput = input(" > ")
+        filePath = dirPath + "\\" + files[int(userInput)]
+        loadBackupFile(filePath)
     else:
-        if not path.isdir(defaultPath):
-            mkdir(defaultPath)
-            hideFile(defaultPath)
-        createBackupFile(defaultPath)
-        systemMessage = " The backup was saved!"
-        startfile(defaultPath)
+        return
 
 
 # option 7 - print layout
