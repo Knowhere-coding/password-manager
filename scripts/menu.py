@@ -3,7 +3,6 @@ from pyperclip import copy
 from time import time
 from os import system, getcwd, startfile, path, mkdir, listdir
 from datetime import datetime, timedelta
-from colorama import init
 from termcolor import colored
 from webbrowser import open_new_tab
 from textFile import logo
@@ -14,15 +13,11 @@ from printLayout import createPrintLayoutFile
 from fileHandling import hideFile
 from fileEncryption import getAESkey
 from backupHandling import createBackupFile, loadBackupFile
-
-# initialize termcolor to work on windows
-init()
-systemMessage = ""
+import config
 
 
 # default overlay
 def optionMenu():
-    global systemMessage
     system("cls")
 
     # show logo
@@ -32,11 +27,11 @@ def optionMenu():
     start = time()
 
     # show system message
-    if systemMessage != "":
+    if config.systemMessage != "":
         print("-" * 30)
-        print(systemMessage)
+        print(config.systemMessage)
         print("-" * 30)
-        systemMessage = ""
+        config.systemMessage = ""
 
     print('-' * 30)
     print(('-' * 12) + " Menu " + ('-' * 12))
@@ -149,7 +144,6 @@ def showOptions(options):
 
 # check change date and change password
 def checkExpirationDate(ID, changeDate, expiration, AES_key):
-    global systemMessage
     if not expiration == "0":
         changeDate = datetime.strptime(changeDate, "%Y-%m-%d %H:%M:%S")
 
@@ -164,7 +158,7 @@ def checkExpirationDate(ID, changeDate, expiration, AES_key):
                     changeData(ID, "password", password, AES_key)
                     return password
                 else:
-                    systemMessage = " The given password was incorrect!"
+                    config.systemMessage = " The given password was incorrect!"
             return ""
         else:
             return ""
@@ -183,7 +177,7 @@ def accountBarrier():
     masterUsername = pwinput(prompt=" Please enter the master username: ")
     masterPassword = pwinput(prompt=" Please enter the master password: ")
     if checkMaster(masterUsername, masterPassword, getAESkey(masterPassword)):
-        AES_key = getAESkey(masterPassword)
+        config.AES_key = getAESkey(masterPassword)
         return True
 
 
@@ -235,14 +229,13 @@ def createAccount(AES_key):
 
 # option 2 - delete account
 def deleteAccount(AES_key):
-    global systemMessage
     if databaseStatus(AES_key):
         showDatabase(AES_key)
         print("\n Please provide the {} of the account you want to delete:".format(colored("ID", "red")))
         ID = input(" > ")
 
         if ID not in getIndices(AES_key):
-            systemMessage = " The ID doesn't exists!"
+            config.systemMessage = " The ID doesn't exists!"
             return
 
         print("\n Are you sure you want to {} the {} account? (Y/N):".format(colored("delete", "red"),
@@ -253,7 +246,7 @@ def deleteAccount(AES_key):
             if passwordBarrier(AES_key):
                 deleteData(ID, AES_key)
             else:
-                systemMessage = " The given password was incorrect!"
+                config.systemMessage = " The given password was incorrect!"
 
 
 # option 3 - find account data
@@ -322,14 +315,13 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
 
 # option 4 - change account data
 def changeAccount(AES_key):
-    global systemMessage
     if databaseStatus(AES_key):
         showDatabase(AES_key)
         print("\n Please provide the {} of the account you want to change:".format(colored("ID", "green")))
         ID = input(" > ")
 
         if ID not in getIndices(AES_key):
-            systemMessage = " The ID doesn't exists!"
+            config.systemMessage = " The ID doesn't exists!"
             return
 
         print("\n Please select the {} you want to change:".format(colored("field name", "green")))
@@ -364,7 +356,7 @@ def changeAccount(AES_key):
                 if fieldName == "password":
                     changeData(ID, "expiration", expiration, AES_key)
             else:
-                systemMessage = " The given password is incorrect!"
+                config.systemMessage = " The given password is incorrect!"
 
 
 # option 5 - show all accounts
@@ -376,7 +368,6 @@ def showAllAccounts(AES_key):
 
 # option 6 - make backup
 def backupMenu():
-    global systemMessage
     defaultPath = getcwd() + "/backup/"
 
     print()
@@ -395,7 +386,7 @@ def backupMenu():
             dstPath = input(" > ")
             backupStatus = createBackupFile(dstPath)
             if backupStatus:
-                systemMessage = " The backup was saved!"
+                config.systemMessage = " The backup was saved!"
                 startfile(dstPath)
             else:
                 print("\n The given destination path is not accessible, please specify a different path!")
@@ -405,7 +396,7 @@ def backupMenu():
                 mkdir(defaultPath)
                 hideFile(defaultPath)
             createBackupFile(defaultPath)
-            systemMessage = " The backup was saved!"
+            config.systemMessage = " The backup was saved!"
             startfile(defaultPath)
     elif choice == "2":
         files = None
@@ -439,9 +430,9 @@ def backupMenu():
             userInput = input(" > ")
         filePath = dirPath + "\\" + files[int(userInput)]
         if loadBackupFile(filePath):
-            systemMessage = " The backup was loaded!"
+            config.systemMessage = " The backup was loaded!"
         else:
-            systemMessage = " Couldn't load backup. Changes reverted!"
+            config.systemMessage = " Couldn't load backup. Changes reverted!"
     else:
         return
 

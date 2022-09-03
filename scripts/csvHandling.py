@@ -1,7 +1,7 @@
 from csv import reader, DictReader, writer
 from os import getcwd
 from fileEncryption import encryptFile, decryptFile
-import menu
+import config
 
 
 # read .csv file data
@@ -40,7 +40,7 @@ def writeCsvData(fileName, rows, case, AES_key):
         for row in rows:
             csvWriter.writerow(row)
         if case == "d":
-            menu.systemMessage = " All data stored!"
+            config.systemMessage = " All data stored!"
         elif case == "s":
-            menu.systemMessage = " All data stored!"
+            config.systemMessage = " All data stored!"
     encryptFile(fileName, AES_key)

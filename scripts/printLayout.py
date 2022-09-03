@@ -2,8 +2,8 @@ from xlwings import App
 from datetime import datetime
 from re import sub
 from csvHandling import readCsvDataWithoutHead
-import menu
 from termcolor import colored
+import config
 
 
 # option 7 - create print layout
@@ -32,8 +32,8 @@ def createPrintLayoutFile(templateFilePath, AES_key):
             wb.close()
             xl_app.quit()
         except Exception as ex:
-            menu.systemMessage = " Error while writing data to excel!"
-        menu.systemMessage = " Error while writing data to excel!"
+            config.systemMessage = " Error while writing data to excel!"
+        config.systemMessage = " Error while writing data to excel!"
 
 
 def getWs():
@@ -76,9 +76,9 @@ def userPrompt(xl_app, wb, AES_key):
         date = sub("\.\d+", "", str(datetime.now())).replace("-", "").replace(" ", "_").replace(":", "")
         fileName = date + "_passwordList.xlsx"
         wb.save(dstPath + fileName, getMasterData(AES_key)[1])
-        menu.systemMessage = " Print Layout saved!"
+        config.systemMessage = " Print Layout saved!"
     try:
         wb.close()
         xl_app.quit()
     except Exception:
-        menu.systemMessage = " Please do not close Excel!"
+        config.systemMessage = " Please do not close Excel!"

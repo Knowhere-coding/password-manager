@@ -3,12 +3,14 @@ from pwinput import pwinput
 from pyperclip import copy
 from time import sleep, time
 from os import system, getcwd
+from colorama import init
 from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, backupMenu, createPrintLayout
 from database import checkMaster
 from initialization import initialization
 from fileEncryption import getAESkey
 from textFile import logo
 from backupHandling import createAutomaticBackup
+import config
 
 
 def main():
@@ -32,10 +34,10 @@ def main():
         masterUsername = pwinput(prompt=" Please enter the master username: ")
         masterPassword = pwinput(prompt=" Please enter the master password: ")
 
-    AES_key = getAESkey(masterPassword)
+    config.AES_key = getAESkey(masterPassword)
 
     # check login
-    if not checkMaster(masterUsername, masterPassword, AES_key):
+    if not checkMaster(masterUsername, masterPassword, config.AES_key):
         print(" Wrong master username or password!")
         sleep(10)
         system("cls")
@@ -60,27 +62,27 @@ def main():
         elif option == "1": # create account
             option = ""
             copy("")  # clear clipboard
-            createAccount(AES_key)
+            createAccount(config.AES_key)
             start = time()
         elif option == "2": # delete account data
             option = ""
             copy("")  # clear clipboard
-            deleteAccount(AES_key)
+            deleteAccount(config.AES_key)
             start = time()
         elif option == "3": # find account data
             option = ""
             copy("")  # clear clipboard
-            findAccounts(AES_key)
+            findAccounts(config.AES_key)
             start = time()
         elif option == "4": # change account data
             option = ""
             copy("")  # clear clipboard
-            changeAccount(AES_key)
+            changeAccount(config.AES_key)
             start = time()
         elif option == "5": # show all accounts
             option = ""
             copy("")  # clear clipboard
-            showAllAccounts(AES_key)
+            showAllAccounts(config.AES_key)
             start = time()
         elif option == "6": # backup menu
             option = ""
@@ -90,7 +92,7 @@ def main():
         elif option == "7": # create print layout
             option = ""
             copy("")
-            createPrintLayout(AES_key)
+            createPrintLayout(config.AES_key)
             start = time()
         elif option == "Q" or option == "q": # quit
             copy("")  # clear clipboard
@@ -98,9 +100,15 @@ def main():
             exit()
         else:
             if option != "":
-                findAccounts(AES_key, True, option)
+                findAccounts(config.AES_key, True, option)
             option, start = optionMenu()
 
 
 if __name__ == "__main__":
+    # initialize global variables
+    config.init()
+
+    # initialize termcolor to work on windows
+    init()
+
     main()

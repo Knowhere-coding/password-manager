@@ -5,6 +5,7 @@ from shutil import rmtree
 from datetime import datetime, timedelta
 from re import compile
 import menu
+import config
 
 
 # option 6 - make backup
@@ -33,7 +34,7 @@ def getLastBackupDate(dst_path):
 def createAutomaticBackup(dst_path):
     if (getLastBackupDate(dst_path) + timedelta(days=30)) < datetime.now():
         createBackupFile(dst_path)
-        menu.systemMessage = " Automatic backup saved!"
+        config.systemMessage = " Automatic backup saved!"
 
 
 def loadBackupFile(filePath):

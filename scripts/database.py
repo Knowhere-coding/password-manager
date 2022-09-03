@@ -6,13 +6,13 @@ import cryptography.exceptions
 from prettytable import PrettyTable
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
 from csvHandling import readCsvData, readCsvDataDict, writeCsvData
-import menu
+import config
 
 
 # check if the database has entries
 def databaseStatus(AES_key):
     if len(readCsvData("/data/account_data.csv", AES_key)) == 1:
-        menu.systemMessage = " The database is empty!"
+        config.systemMessage = " The database is empty!"
         return False
     else:
         return True
@@ -95,7 +95,7 @@ def storeData(siteName, url, username, email, password, expiration, category, AE
 
     for ID, row in enumerate(rows, 0):
         if row[1:5] == [siteName, url, username, email]:
-            menu.systemMessage = " The account already exists!"
+            config.systemMessage = " The account already exists!"
             status = False
             break
     if status:
@@ -148,7 +148,7 @@ def findData(searchingField, searchingValue, AES_key, output=None):
         print(accountData)
         return results, indices
     else:
-        menu.systemMessage = " No {} results for: {}".format(searchingField, searchingValue)
+        config.systemMessage = " No {} results for: {}".format(searchingField, searchingValue)
         return [], []
 
 

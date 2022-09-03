@@ -3,7 +3,7 @@ from csv import writer
 from re import compile
 from fileHandling import hideFile
 from fileEncryption import generateAndSaveAESkey, getAESkey, encryptFile
-import menu
+import config
 
 
 # initialization (create Username/Password), build directories
@@ -57,7 +57,7 @@ def createMasterAccountDatabase(masterUsername, masterPassword):
         writer(csvDataFile, delimiter=",").writerows([["masterUsername", "masterPassword"], [masterUsername, masterPassword]])
     encryptFile("/data/master_account_data.csv", AES_key)
 
-    menu.systemMessage = " All master data stored!"
+    config.systemMessage = " All master data stored!"
     createAccountDatabase(AES_key)
 
 
@@ -66,4 +66,4 @@ def createAccountDatabase(AES_key):
     with open(getcwd() + "/data/account_data.csv", mode="w", newline="") as csvDataFile:
         writer(csvDataFile, delimiter=",").writerow(["ID", "siteName", "url", "username", "email", "password", "changeDate", "expiration", "category"])
     encryptFile("/data/account_data.csv", AES_key)
-    menu.systemMessage = " Account database created!"
+    config.systemMessage = " Account database created!"
