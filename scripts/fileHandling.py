@@ -14,7 +14,7 @@ def createZipFile(dstPath):
 
     # Walk through the files in a directory
     srcPath = getcwd() + "\data"
-    for srcPath, dir_names, files in walk(srcPath):
+    for srcPath, _, files in walk(srcPath):
         filePath = srcPath.replace(srcPath, '')
         filePath = filePath and filePath + sep
 
@@ -27,3 +27,16 @@ def createZipFile(dstPath):
 # hide files in explorer
 def hideFile(fileName):
     system("attrib +h " + fileName)
+
+
+# load backup .zip file
+def unzipFile(filePath):
+    srcPath = getcwd() + "\data"
+    with ZipFile(filePath, mode="r") as zip:
+        zip.extractall(srcPath)
+
+        # hide directory and files
+        hideFile(srcPath)
+        for srcPath, _, files in walk(srcPath):
+            for file in files:
+                hideFile(srcPath + "/" + file)

@@ -9,9 +9,10 @@ from webbrowser import open_new_tab
 from textFile import logo
 from passwordManagement import createNewPassword
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, checkMasterPassword, \
-    getIndices, getColumnData, getRowData
+    checkMaster, getIndices, getColumnData, getRowData
 from printLayout import createPrintLayoutFile
 from fileHandling import hideFile
+from fileEncryption import getAESkey
 from backupHandling import createBackupFile, loadBackupFile
 
 # initialize termcolor to work on windows
@@ -174,6 +175,16 @@ def checkExpirationDate(ID, changeDate, expiration, AES_key):
 def passwordBarrier(AES_key):
     masterPassword = pwinput(prompt="\n Please provide your master password: ")
     return checkMasterPassword(masterPassword, AES_key)
+
+
+# account barrier for loading backup
+def accountBarrier():
+    print("\n To load the backup you need to {} your account!".format(colored("verify", "red")))
+    masterUsername = pwinput(prompt=" Please enter the master username: ")
+    masterPassword = pwinput(prompt=" Please enter the master password: ")
+    if checkMaster(masterUsername, masterPassword, getAESkey(masterPassword)):
+        AES_key = getAESkey(masterPassword)
+        return True
 
 
 # option 1 - create new account
@@ -364,10 +375,11 @@ def showAllAccounts(AES_key):
 
 
 # option 6 - make backup
-def createBackup():
+def backupMenu():
     global systemMessage
     defaultPath = getcwd() + "/backup/"
 
+    print()
     print('-' * 30)
     print(" 1 - Create {}".format(colored("backup", "cyan")))
     print(" 2 - Load {}".format(colored("backup", "cyan")))
@@ -375,7 +387,7 @@ def createBackup():
     choice = input(" > ")
 
     if choice == "1":
-        print("\n Do you want to specify a backup destination? (Y/N):".format())
+        print("\n Do you want to specify a backup destination? (Y/N):")
         choice = choicePrompt()
 
         if choice:
@@ -387,7 +399,7 @@ def createBackup():
                 startfile(dstPath)
             else:
                 print("\n The given destination path is not accessible, please specify a different path!")
-                createBackup()
+                backupMenu()
         else:
             if not path.isdir(defaultPath):
                 mkdir(defaultPath)
@@ -400,16 +412,17 @@ def createBackup():
         indices = []
         dirPath = defaultPath
 
-        print(
-            "\n Please specify the path you want to load the backup from or press ENTER if the backup is in the default path:")
+        print("\n Please specify the {} you want to load the backup from or press {} if the backup is in the default path:".format(colored("path", "green"), colored("ENTER", "red")))
         while not files:
             userPath = input(" > ")
             if userPath:
                 dirPath = userPath + "\\" if userPath[-1] != "\\" else userPath
+            else:
+                dirPath = defaultPath
             try:
                 files = listdir(dirPath)
             except FileNotFoundError:
-                print(" \n File path not found or empty!\n")
+                print(" \n File path not found or empty!")
 
         print("\n Please select an existing {} or press {} to return".format(colored("file", "green"),
                                                                            colored("ENTER", "red")))
@@ -425,7 +438,10 @@ def createBackup():
             print(" The index is not available, try again!")
             userInput = input(" > ")
         filePath = dirPath + "\\" + files[int(userInput)]
-        loadBackupFile(filePath)
+        if loadBackupFile(filePath):
+            systemMessage = " The backup was loaded!"
+        else:
+            systemMessage = " Couldn't load backup. Changes reverted!"
     else:
         return
 

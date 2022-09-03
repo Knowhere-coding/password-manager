@@ -3,7 +3,7 @@ from pwinput import pwinput
 from pyperclip import copy
 from time import sleep, time
 from os import system, getcwd
-from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, createBackup, createPrintLayout
+from menu import optionMenu, createAccount, deleteAccount, findAccounts, changeAccount, showAllAccounts, backupMenu, createPrintLayout
 from database import checkMaster
 from initialization import initialization
 from fileEncryption import getAESkey
@@ -82,10 +82,10 @@ def main():
             copy("")  # clear clipboard
             showAllAccounts(AES_key)
             start = time()
-        elif option == "6": # create backup
+        elif option == "6": # backup menu
             option = ""
             copy("") # clear clipboard
-            createBackup()
+            backupMenu()
             start = time()
         elif option == "7": # create print layout
             option = ""
