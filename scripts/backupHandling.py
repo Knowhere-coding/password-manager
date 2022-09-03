@@ -40,6 +40,11 @@ def createAutomaticBackup(dst_path):
 def loadBackupFile(filePath):
     if (getLastBackupDate(getcwd() + "/backup/") + timedelta(days=1)) < datetime.now():
         createBackupFile(getcwd() + "/backup/")
+    # remove directory if it exists
+    try:
+        rmtree(getcwd() + "\data_old")
+    except:
+        pass
     rename(getcwd() + "\data", getcwd() + "\data_old")
     try:
         unzipFile(filePath)
@@ -51,5 +56,10 @@ def loadBackupFile(filePath):
             rename(getcwd() + "\data_old", getcwd() + "\data")
             return False
     except Exception:
+        # remove directory if it exists
+        try:
+            rmtree(getcwd() + "\data")
+        except:
+            pass
         rename(getcwd() + "\data_old", getcwd() + "\data")
         return False
