@@ -1,18 +1,16 @@
 from pwinput import pwinput
-from pyperclip import copy
 from time import time
 from os import system, getcwd, startfile, path, mkdir, listdir
-from datetime import datetime, timedelta
+from datetime import datetime
 from termcolor import colored
-from webbrowser import open_new_tab
 from textFile import logo
-from passwordManagement import createNewPassword
-from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, checkMasterPassword, \
-    checkMaster, getIndices, getColumnData, getRowData
+from passwordManagement import createNewPassword, passwordOption, checkExpirationDate, passwordBarrier, accountBarrier
+from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, getIndices, getColumnData, getRowData
 from printLayout import createPrintLayoutFile
 from fileHandling import hideFile
 from fileEncryption import getAESkey
 from backupHandling import createBackupFile, loadBackupFile
+from utilities import choicePrompt, copyToClipboard, openUrl, showOptions
 import config
 
 
@@ -47,147 +45,20 @@ def optionMenu():
     return input(" > "), start
 
 
-# give the user a choice
-def choicePrompt():
-    choice = input(" > ")
-    return True if choice.upper() == "Y" else False
-
-
-# copy data to clipboard
-def copyToClipboard(msg):
-    copy(msg)
-    print('-' * 47)
-    print("")
-    print(" Your {} has been copied to your {}".format(colored("password", "green"), colored("clipboard", "cyan")))
-    print("")
-    print('-' * 47)
-
-
-# open url
-def openUrl(url):
-    # open url
-    print("\n Do you want to open the {}? (Y/N):".format(colored("url", "green")))
-    choice = choicePrompt()
-
-    if choice:
-        open_new_tab("https://" + url)
-
-
-# create/change password
-def passwordOption():
-    # option to generate random password
-    print("\n Do you want to generate a random {}? (Y/N):".format(colored("password", "green")))
-    choice = choicePrompt()
-
-    # generate random password
-    if choice:
-        minLength, maxLength = getMinMaxLength()
-        specialChars = getSpecialChars()
-        password = createNewPassword(minLength, maxLength, specialChars)
-    # provide own password
-    else:
-        print("\n Please provide your own {}:".format(colored("password", "green")))
-        password = pwinput(prompt=" > ")
-
-    return password
-
-
-# let the user define valid special chars for the random generated password
-def getSpecialChars():
-    print("\n Please specify the given {} besides all letters and digits (if none type -):".format(
-        colored("special characters", "green")))
-    return input(" > ")
-
-
-# let the user define the minimum and maximum length of the random generated password
-def getMinMaxLength():
-    minLength = 0
-    maxLength = 0
-
-    try:
-        print("\n Please specify the {} length of the password:".format(colored("minimum", "red")))
-        minLength = int(input(" > "))
-        print("\n Please specify the {} length of the password:".format(colored("maximum", "green")))
-        maxLength = int(input(" > "))
-    except ValueError:
-        print("\n Please input numbers!")
-
-    while minLength <= 0 or maxLength < minLength or maxLength > 64:
-        if minLength <= 0:
-            print("\n The minimum value can not be 0 or negative!")
-        elif maxLength < minLength:
-            print("\n The minimum value can not be higher than the maximum value!")
-        elif maxLength > 64:
-            print("\n The maximum length of the password is 64!")
-
-        try:
-            print("\n New {}:".format(colored("minimum", "red")))
-            minLength = int(input(" > "))
-            print("\n New {}:".format(colored("maximum", "green")))
-            maxLength = int(input(" > "))
-        except ValueError:
-            print("\n Please input numbers!")
-
-    if maxLength > 32:
-        print("\n Secure is not enough for you, right? :D")
-    return minLength, maxLength
-
-
-def showOptions(options):
-    for key in options:
-        print("   {} - {}".format(key, colored(options[key], "white")))
-    userInput = input(" > ")
-    while userInput not in [str(x) for x in options.keys()]:
-        userInput = input(" > ")
-    return options[int(userInput)]
-
-
-# check change date and change password
-def checkExpirationDate(ID, changeDate, expiration, AES_key):
-    if not expiration == "0":
-        changeDate = datetime.strptime(changeDate, "%Y-%m-%d %H:%M:%S")
-
-        if (changeDate + timedelta(days=int(expiration))) < datetime.now():
-            print("\n {} The password-change-date is more than {} days ago {}".format(colored("!!!", "red"), expiration,
-                                                                                    colored("!!!", "red")))
-            print("\n Do you want to change the {}? (Y/N):".format(colored("password", "green")))
-            choice = choicePrompt()
-            if choice:
-                password = passwordOption()
-                if passwordBarrier(AES_key):
-                    changeData(ID, "password", password, AES_key)
-                    return password
-                else:
-                    config.systemMessage = " The given password was incorrect!"
-            return ""
-        else:
-            return ""
-    return ""
-
-
-# password barrier for changing/deleting data from the database
-def passwordBarrier(AES_key):
-    masterPassword = pwinput(prompt="\n Please provide your master password: ")
-    return checkMasterPassword(masterPassword, AES_key)
-
-
-# account barrier for loading backup
-def accountBarrier():
-    print("\n To load the backup you need to {} your account!".format(colored("verify", "red")))
-    masterUsername = pwinput(prompt=" Please enter the master username: ")
-    masterPassword = pwinput(prompt=" Please enter the master password: ")
-    if checkMaster(masterUsername, masterPassword, getAESkey(masterPassword)):
-        config.AES_key = getAESkey(masterPassword)
-        return True
-
-
 # option 1 - create new account
 def createAccount(AES_key):
     # category
     print("\n Choose the {} for your new account:".format(colored("category", "green")))
     category = showOptions(
-        {1: "email", 2: "social media", 3: "gaming", 4: "coding", 5: "shopping", 6: "banking", 7: "education",
-         8: "private", 9: "other"})
+        {1: "email",
+         2: "social media",
+         3: "gaming",
+         4: "coding",
+         5: "shopping",
+         6: "banking",
+         7: "education",
+         8: "private",
+         9: "other"})
 
     # site name
     print("\n Please provide the {} (e.g. reddit) you want to create a new account for:".format(
@@ -205,8 +76,8 @@ def createAccount(AES_key):
         username = ""
 
     # email
-    print(
-        "\n Please provide an {} or select an existing {}:".format(colored("email", "green"), colored("email", "green")))
+    print("\n Please provide an {} or select an existing {}:"
+          .format(colored("email", "green"), colored("email", "green")))
     options = {key: value for (key, value) in enumerate(getColumnData("email", AES_key), 1)}
     for key in options:
         print("   {} - {}".format(key, colored(options[key], "white")))
@@ -238,11 +109,9 @@ def deleteAccount(AES_key):
             config.systemMessage = " The ID doesn't exists!"
             return
 
-        print("\n Are you sure you want to {} the {} account? (Y/N):".format(colored("delete", "red"),
-                                                                           colored(getRowData(ID, AES_key)["siteName"],
-                                                                                   "green")))
-        choice = choicePrompt()
-        if choice:
+        print("\n Are you sure you want to {} the {} account? (Y/N):"
+              .format(colored("delete", "red"), colored(getRowData(ID, AES_key)["siteName"], "green")))
+        if choicePrompt():
             if passwordBarrier(AES_key):
                 deleteData(ID, AES_key)
             else:
@@ -290,8 +159,8 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
             print("\n Automatically selected Account {}!".format(colored(results[0]["ID"], "cyan")))
             index = 0
         else:
-            print("\n Select the {} of your account or press {} to go back to the menu: ".format(colored("ID", "red"),
-                                                                                               colored("ENTER", "red")))
+            print("\n Select the {} of your account or press {} to go back to the menu: "
+                  .format(colored("ID", "red"), colored("ENTER", "red")))
             accountNum = input(" > ")
 
             if not accountNum:
@@ -303,7 +172,9 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
                     return
             index = indices.index(accountNum)
 
-        password = checkExpirationDate(results[index]["ID"], results[index]["changeDate"], results[index]["expiration"],
+        password = checkExpirationDate(results[index]["ID"],
+                                       results[index]["changeDate"],
+                                       results[index]["expiration"],
                                        AES_key)
         if password == "":
             copyToClipboard(results[index]["password"])
@@ -344,13 +215,10 @@ def changeAccount(AES_key):
         else:
             print("\n Please provide the new {}:".format(colored(fieldName, "green")))
             changeValue = input(" > ")
-        print("\n Are you sure you want to {} the {} of the {} account? (Y/N):".format(colored("change", "red"),
-                                                                                     colored(fieldName, "green"),
-                                                                                     colored(getRowData(ID, AES_key)[
-                                                                                                 "siteName"], "red")))
-        choice = choicePrompt()
+        print("\n Are you sure you want to {} the {} of the {} account? (Y/N):"
+              .format(colored("change", "red"), colored(fieldName, "green"), colored(getRowData(ID, AES_key)["siteName"], "red")))
 
-        if choice:
+        if choicePrompt():
             if passwordBarrier(AES_key):
                 changeData(ID, fieldName, changeValue, AES_key)
                 if fieldName == "password":
@@ -379,9 +247,8 @@ def backupMenu():
 
     if choice == "1":
         print("\n Do you want to specify a backup destination? (Y/N):")
-        choice = choicePrompt()
 
-        if choice:
+        if choicePrompt():
             print("\n Please specify the destination path you want to save the backup to:")
             dstPath = input(" > ")
             backupStatus = createBackupFile(dstPath)
@@ -403,7 +270,8 @@ def backupMenu():
         indices = []
         dirPath = defaultPath
 
-        print("\n Please specify the {} you want to load the backup from or press {} if the backup is in the default path:".format(colored("path", "green"), colored("ENTER", "red")))
+        print("\n Please specify the {} you want to load the backup from or press {} if the backup is in the default path:"
+              .format(colored("path", "green"), colored("ENTER", "red")))
         while not files:
             userPath = input(" > ")
             if userPath:
@@ -415,8 +283,8 @@ def backupMenu():
             except FileNotFoundError:
                 print(" \n File path not found or empty!")
 
-        print("\n Please select an existing {} or press {} to return".format(colored("file", "green"),
-                                                                           colored("ENTER", "red")))
+        print("\n Please select an existing {} or press {} to return"
+              .format(colored("file", "green"), colored("ENTER", "red")))
         for i, file in enumerate(files):
             indices.append(str(i))
             backupAge = datetime.now() - datetime.fromtimestamp(path.getctime(dirPath + file))
