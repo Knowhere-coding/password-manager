@@ -1,17 +1,16 @@
-from csv import reader
+from csv import DictReader
 from os import getcwd, remove
 from re import sub
 from datetime import datetime
-import cryptography.exceptions
 from prettytable import PrettyTable
 from fileEncryption import encryptFile, decryptFile, saveDecryptFile
-from csvHandling import readCsvData, readCsvDataDict, writeCsvData
+from csvHandling import readCsvDataDict, writeCsvDataDict
 import config
 
 
 # check if the database has entries
 def databaseStatus(AES_key):
-    if len(readCsvData("/data/account_data.csv", AES_key)) == 1:
+    if len(readCsvDataDict("/data/account_data.csv", AES_key)) == 0:
         config.systemMessage = " The database is empty!"
         return False
     else:
@@ -39,9 +38,9 @@ def checkMaster(masterUsername, masterPassword, AES_key):
             # check master account data
             decryptFile("/data/master_account_data.csv.enc", AES_key)
             with open(getcwd() + "/data/master_account_data.csv") as csvDataFile:
-                csvReader = reader(csvDataFile, delimiter=',')
+                csvReader = DictReader(csvDataFile, delimiter=',')
                 for row in csvReader:
-                    status = masterUsername == row[0] and masterPassword == row[1]
+                    status = masterUsername == row["masterUsername"] and masterPassword == row["masterPassword"]
             encryptFile("/data/master_account_data.csv", AES_key)
         else:
             status = False
@@ -54,9 +53,9 @@ def checkMaster(masterUsername, masterPassword, AES_key):
 def checkMasterPassword(masterPassword, AES_key):
     decryptFile("/data/master_account_data.csv.enc", AES_key)
     with open(getcwd() + "/data/master_account_data.csv") as csvDataFile:
-        csvReader = reader(csvDataFile, delimiter=',')
+        csvReader = DictReader(csvDataFile, delimiter=',')
         for row in csvReader:
-            status = row[1] == masterPassword
+            status = row["masterPassword"] == masterPassword
     encryptFile("/data/master_account_data.csv", AES_key)
     return status
 
@@ -89,30 +88,35 @@ def getRowData(ID, AES_key):
 
 # option 1 - store account data in database
 def storeData(siteName, url, username, email, password, expiration, category, AES_key):
-    status = True
-    ID = 0
-    rows = readCsvData("/data/account_data.csv", AES_key)
+    rows = readCsvDataDict("/data/account_data.csv", AES_key)
 
-    for ID, row in enumerate(rows, 0):
-        if row[1:5] == [siteName, url, username, email]:
+    for row in rows:
+        if row["siteName"] == siteName and row["url"] == url and row["username"] == username and row["email"] == email:
             config.systemMessage = " The account already exists!"
-            status = False
-            break
-    if status:
-        rows.append([ID, siteName, url, username, email, password, sub("\.\d+", "", str(datetime.now())), expiration, category])
-        writeCsvData("/data/account_data.csv", rows, "s", AES_key)
-    return status
+            return False
+
+    rows.append({"ID": len(rows),
+                 "siteName": siteName,
+                 "url": url,
+                 "username": username,
+                 "email": email,
+                 "password": password,
+                 "changeDate": sub("\.\d+", "", str(datetime.now())),
+                 "expiration": expiration,
+                 "category": category})
+    writeCsvDataDict("/data/account_data.csv", rows, "s", AES_key)
+    return True
 
 
 # option 2 - delete account data from database
 def deleteData(ID, AES_key):
-    rows = readCsvData("/data/account_data.csv", AES_key)
+    rows = readCsvDataDict("/data/account_data.csv", AES_key)
     for row in rows:
-        if row[0] == ID:
+        if row["ID"] == ID:
             rows.remove(row)
-    for i, row in enumerate(rows[1:], 0):
-        row[0] = str(i)
-    writeCsvData("/data/account_data.csv", rows, "d", AES_key)
+    for i, row in enumerate(rows, 0):
+        row["ID"] = str(i)
+    writeCsvDataDict("/data/account_data.csv", rows, "d", AES_key)
 
 
 # option 3 - search account data from database
@@ -155,16 +159,18 @@ def findData(searchingField, searchingValue, AES_key, output=None):
 # option 4 - change account data
 def changeData(ID, fieldName, changeValue, AES_key):
     rows = readCsvDataDict("/data/account_data.csv", AES_key)
-    newRows = [rows[0].keys()]
     for row in rows:
         if row["ID"] == str(ID):
-            if fieldName.lower() == "password":
-                row[fieldName] = changeValue
-                row["changeDate"] = sub("\.\d+", "", str(datetime.now()))
+            if row[fieldName] == changeValue:
+                config.systemMessage = " Nothing to change here!"
+                return
             else:
-                row[fieldName] = changeValue
-        newRows.append(list(row.values()))
-    writeCsvData("/data/account_data.csv", newRows, "s", AES_key)
+                if fieldName == "password":
+                    row[fieldName] = changeValue
+                    row["changeDate"] = sub("\.\d+", "", str(datetime.now()))
+                else:
+                    row[fieldName] = changeValue
+    writeCsvDataDict("/data/account_data.csv", rows, "c", AES_key)
 
 
 # option 5 - show all database entries sorted
@@ -175,15 +181,15 @@ def showDatabase(AES_key, sortedBy=1):
     database.align["ID"] = "r"
     entries = []
 
-    for row in readCsvData("/data/account_data.csv", AES_key)[1:]:
+    for row in readCsvDataDict("/data/account_data.csv", AES_key):
         # replace password with *
-        row[5] = "*"*len(row[5])
+        row["password"] = "*"*len(row["password"])
 
         # shorten url
-        if len(row[2]) > 34:
-            row[2] = "{}...".format(row[2][:34])
+        if len(row["url"]) > 34:
+            row["url"] = "{}...".format(row["url"][:34])
 
-        entries.append(row)
+        entries.append(list(row.values()))
     entries.sort(key=lambda entries: entries[sortedBy])
     for entry in entries:
         database.add_row(entry)
