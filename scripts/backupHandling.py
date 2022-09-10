@@ -14,6 +14,10 @@ def createBackupFile(dst_path):
         createZipFile(dst_path)
         return True
     except FileNotFoundError:
+        print(" \n File path not found or empty!")
+        return False
+    except PermissionError:
+        print(" \n Permission denied!")
         return False
 
 

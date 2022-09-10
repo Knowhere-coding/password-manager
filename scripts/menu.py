@@ -231,7 +231,7 @@ def changeAccount(AES_key):
 def showAllAccounts(AES_key):
     if databaseStatus(AES_key):
         showDatabase(AES_key)
-    pwinput(prompt=" Press enter to continue!", mask="")
+        pwinput(prompt=" Press enter to continue!", mask="")
 
 
 # option 6 - make backup
@@ -246,25 +246,24 @@ def backupMenu():
     choice = input(" > ")
 
     if choice == "1":
-        print("\n Do you want to specify a backup destination? (Y/N):")
-
-        if choicePrompt():
-            print("\n Please specify the destination path you want to save the backup to:")
-            dstPath = input(" > ")
-            backupStatus = createBackupFile(dstPath)
-            if backupStatus:
-                config.systemMessage = " The backup was saved!"
-                startfile(dstPath)
+        dirPath = defaultPath
+        print("\n Please specify the {} you want to save the backup to or press {} to save the backup in the default path:"
+              .format(colored("path", "green"), colored("ENTER", "red")))
+        backupStatus = False
+        while not backupStatus:
+            userPath = input(" > ")
+            if userPath:
+                dirPath = userPath + "\\" if userPath[-1] != "\\" else userPath
             else:
-                print("\n The given destination path is not accessible, please specify a different path!")
-                backupMenu()
-        else:
-            if not path.isdir(defaultPath):
-                mkdir(defaultPath)
-                hideFile(defaultPath)
-            createBackupFile(defaultPath)
-            config.systemMessage = " The backup was saved!"
-            startfile(defaultPath)
+                if not path.isdir(defaultPath):
+                    mkdir(defaultPath)
+                    hideFile(defaultPath)
+                dirPath = defaultPath
+            backupStatus = createBackupFile(dirPath)
+            if not backupStatus:
+                print("\n Couldn't save backup to: {}".format(dirPath))
+        config.systemMessage = " The backup was saved!"
+        startfile(dirPath)
     elif choice == "2":
         files = None
         indices = []
@@ -282,6 +281,8 @@ def backupMenu():
                 files = listdir(dirPath)
             except FileNotFoundError:
                 print(" \n File path not found or empty!")
+            except PermissionError:
+                print(" \n Permission denied!")
 
         print("\n Please select an existing {} or press {} to return"
               .format(colored("file", "green"), colored("ENTER", "red")))
@@ -293,14 +294,12 @@ def backupMenu():
 
         while userInput not in indices:
             if not userInput:
+                config.systemMessage = " No backup was loaded!"
                 return
             print(" The index is not available, try again!")
             userInput = input(" > ")
         filePath = dirPath + "\\" + files[int(userInput)]
-        if loadBackupFile(filePath):
-            config.systemMessage = " The backup was loaded!"
-        else:
-            config.systemMessage = " Couldn't load backup. Changes reverted!"
+        config.systemMessage = " The backup was loaded!" if loadBackupFile(filePath) else " Couldn't load backup. Changes reverted!"
     else:
         return
 
