@@ -3,6 +3,7 @@ from time import ctime, strptime
 from os import path, getcwd, listdir, rename, remove
 from shutil import rmtree
 from datetime import datetime, timedelta
+from termcolor import colored
 from re import compile
 import menu
 import config
@@ -39,6 +40,26 @@ def createAutomaticBackup(dst_path):
     if (getLastBackupDate(dst_path) + timedelta(days=30)) < datetime.now():
         createBackupFile(dst_path)
         config.systemMessage = " Automatic backup saved!"
+
+
+def getBackupFiles(dirPath):
+    try:
+        return listdir(dirPath)
+    except FileNotFoundError:
+        print(" \n File path not found or empty!")
+        return None
+    except PermissionError:
+        print(" \n Permission denied!")
+        return None
+
+
+def showBackupFileList(files, dirPath):
+    indices = []
+    for i, file in enumerate(files):
+        indices.append(str(i))
+        backupAge = datetime.now() - datetime.fromtimestamp(path.getctime(dirPath + file))
+        print("   {} - {:30} {:4d} days ago".format(colored(i, "cyan"), file, backupAge.days))
+    return indices
 
 
 def loadBackupFile(filePath):

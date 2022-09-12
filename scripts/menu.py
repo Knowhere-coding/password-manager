@@ -1,7 +1,6 @@
 from pwinput import pwinput
 from time import time
-from os import system, getcwd, startfile, path, mkdir, listdir
-from datetime import datetime
+from os import system, getcwd, startfile, path, mkdir
 from termcolor import colored
 from textFile import logo
 from passwordManagement import createNewPassword, passwordOption, checkExpirationDate, passwordBarrier, accountBarrier
@@ -9,7 +8,7 @@ from database import storeData, deleteData, findData, changeData, showDatabase, 
 from printLayout import createPrintLayoutFile
 from fileHandling import hideFile
 from fileEncryption import getAESkey
-from backupHandling import createBackupFile, loadBackupFile
+from backupHandling import createBackupFile, getBackupFiles, showBackupFileList, loadBackupFile
 from utilities import choicePrompt, copyToClipboard, openUrl, showOptions
 import config
 
@@ -266,7 +265,6 @@ def backupMenu():
         startfile(dirPath)
     elif choice == "2":
         files = None
-        indices = []
         dirPath = defaultPath
 
         print("\n Please specify the {} you want to load the backup from or press {} if the backup is in the default path:"
@@ -277,19 +275,11 @@ def backupMenu():
                 dirPath = userPath + "\\" if userPath[-1] != "\\" else userPath
             else:
                 dirPath = defaultPath
-            try:
-                files = listdir(dirPath)
-            except FileNotFoundError:
-                print(" \n File path not found or empty!")
-            except PermissionError:
-                print(" \n Permission denied!")
+            files = getBackupFiles(dirPath)
 
         print("\n Please select an existing {} or press {} to return"
               .format(colored("file", "green"), colored("ENTER", "red")))
-        for i, file in enumerate(files):
-            indices.append(str(i))
-            backupAge = datetime.now() - datetime.fromtimestamp(path.getctime(dirPath + file))
-            print("   {} - {} {:4d} days ago".format(colored(i, "cyan"), file, backupAge.days))
+        indices = showBackupFileList(files, dirPath)
         userInput = input(" > ")
 
         while userInput not in indices:
