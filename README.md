@@ -5,10 +5,11 @@
 
 This is a simple *terminal based* **password manager**.
 
-![UI_screenshot](https://user-images.githubusercontent.com/92861465/190469551-c1ef3bb1-0a81-4b57-a575-4ef43f240db9.PNG)
+![UI_screenshot](https://user-images.githubusercontent.com/92861465/190476957-bcb102cc-8aef-41d7-9861-31ce8f0332d0.PNG)
 <!-- UI Screenshot -->
 
 ## Features:
+
 ### Store any account in an AES encrypted database
 
 First of all, you have to provide a ***category***, ***siteName***, ***url***, ***username*** and ***email*** for your account to store it in the database.
