@@ -5,7 +5,7 @@
 
 This is a simple *terminal based* **password manager**.
 
-![UI_screenshot](https://user-images.githubusercontent.com/92861465/157726142-f6b4735e-cf28-4f48-bcbf-4baec714bd46.PNG)
+![UI_screenshot](https://user-images.githubusercontent.com/92861465/190469551-c1ef3bb1-0a81-4b57-a575-4ef43f240db9.PNG)
 <!-- UI Screenshot -->
 
 ## Features:
@@ -49,7 +49,7 @@ You can create a *print layout* with all your account data which you can print o
   - simple access
   - easy to encrypt
 
-## The whole Password Manager can be stored locally on a USB Thumb Drive
+## The whole Password Manager can be stored executed locally on a USB Thumb Drive
 
 ## Requirements
 **Python 3.10**
@@ -74,5 +74,5 @@ External libraries:
   - sympy~=1.9
 
 
-        ©Copyright 2021 by Knowhere-coding
+        ©Copyright 2022 by Knowhere-coding
 
