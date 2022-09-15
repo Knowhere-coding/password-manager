@@ -1,11 +1,11 @@
-from fileHandling import createZipFile, unzipFile
 from time import ctime, strptime
 from os import path, getcwd, listdir, rename, remove
 from shutil import rmtree
 from datetime import datetime, timedelta
 from termcolor import colored
 from re import compile
-import menu
+from fileHandling import createZipFile, unzipFile
+from passwordManagement import accountBarrier
 import config
 
 
@@ -73,7 +73,7 @@ def loadBackupFile(filePath):
     rename(getcwd() + "\data", getcwd() + "\data_old")
     try:
         unzipFile(filePath)
-        if menu.accountBarrier():
+        if accountBarrier():
             rmtree(getcwd() + "\data_old")
             return True
         else:
