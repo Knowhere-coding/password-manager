@@ -3,7 +3,7 @@ from time import time
 from os import system, getcwd, startfile, path, mkdir
 from termcolor import colored
 from textFile import logo
-from passwordManagement import createNewPassword, passwordOption, checkExpirationDate, passwordBarrier, accountBarrier
+from passwordManagement import createNewPassword, passwordOption, isPasswordExpired, passwordExpiredOption, passwordBarrier, accountBarrier
 from database import storeData, deleteData, findData, changeData, showDatabase, databaseStatus, getIndices, getColumnData, getRowData
 from printLayout import createPrintLayoutFile
 from fileHandling import hideFile
@@ -171,14 +171,12 @@ def findAccounts(AES_key, shortcut=False, shortcutInput=None):
                     return
             index = indices.index(accountNum)
 
-        password = checkExpirationDate(results[index]["ID"],
-                                       results[index]["changeDate"],
-                                       results[index]["expiration"],
-                                       AES_key)
-        if password == "":
-            copyToClipboard(results[index]["password"])
-        else:
-            copyToClipboard(password)
+        copyToClipboard(results[index]["password"])
+
+        if isPasswordExpired(results[index]["changeDate"], results[index]["expiration"]):
+            newPassword = passwordExpiredOption(results[index]["ID"], AES_key)
+            if newPassword:
+                copyToClipboard(newPassword)
 
         openUrl(results[index]["url"])
 

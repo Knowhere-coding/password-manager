@@ -7,12 +7,13 @@ from datetime import datetime, timedelta
 from database import checkMaster, checkMasterPassword
 from fileEncryption import getAESkey
 from utilities import choicePrompt
+from database import changeData
 import config
 
 
 # create a random password
 def createNewPassword(minLength, maxLength, specialChars):
-    if specialChars == "-":
+    if specialChars == "":
         specialChars = "!#$%&'()*+-./:;<=>?@[]^_`{|}~"
     specialChars.replace(",", "")
     password = ""
@@ -47,8 +48,8 @@ def passwordOption():
 
 # let the user define valid special chars for the random generated password
 def getSpecialChars():
-    print("\n Please specify the given {} besides all letters and digits (if none type -):"
-          .format(colored("special characters", "green")))
+    print("\n Please specify the {} besides all letters and digits or press {} for the default ones:"
+          .format(colored("special characters", "green"), colored("ENTER", "red")))
     return input(" > ")
 
 
@@ -87,25 +88,29 @@ def getMinMaxLength():
 
 
 # check change date and change password
-def checkExpirationDate(ID, changeDate, expiration, AES_key):
+def isPasswordExpired(changeDate, expiration):
     if not expiration == "0":
         changeDate = datetime.strptime(changeDate, "%Y-%m-%d %H:%M:%S")
 
         if (changeDate + timedelta(days=int(expiration))) < datetime.now():
             print("\n {} The password-change-date is more than {} days ago {}".format(colored("!!!", "red"), expiration,
                                                                                       colored("!!!", "red")))
-            print("\n Do you want to change the {}? (Y/N):".format(colored("password", "green")))
-            choice = choicePrompt()
-            if choice:
-                password = passwordOption()
-                if passwordBarrier(AES_key):
-                    changeData(ID, "password", password, AES_key)
-                    return password
-                else:
-                    config.systemMessage = " The given password was incorrect!"
-            return ""
+            return True
         else:
-            return ""
+            return False
+    return False
+
+
+def passwordExpiredOption(ID, AES_key):
+    print("\n Do you want to change the {}? (Y/N):".format(colored("password", "green")))
+    if choicePrompt():
+        pwinput(prompt="\n Please log into your account and start the PASSWORD CHANGING workflow and then press ENTER...", mask="")
+        password = passwordOption()
+        if passwordBarrier(AES_key):
+            changeData(ID, "password", password, AES_key)
+            return password
+        else:
+            config.systemMessage = " The given password was incorrect!"
     return ""
 
 
