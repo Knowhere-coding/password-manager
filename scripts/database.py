@@ -193,5 +193,5 @@ def showDatabase(AES_key, sortedBy=1):
     entries.sort(key=lambda entries: entries[sortedBy])
     for entry in entries:
         database.add_row(entry)
-    print()
+    print(f"\n {len(entries)} entries loaded!")
     print(database)

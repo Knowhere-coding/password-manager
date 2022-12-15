@@ -25,7 +25,7 @@ def openUrl(url):
     print("\n Do you want to open the {}? (Y/N):".format(colored("url", "green")))
 
     if choicePrompt():
-        open_new_tab("https://" + url)
+        open_new_tab(url)
 
 
 # show an options list and return the chosen option
