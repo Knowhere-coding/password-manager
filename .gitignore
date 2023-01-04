@@ -1,7 +1,16 @@
 # files
 data/
+backup/
+backup_copy/
+data - Copy/
+print_layout/
 requirements_and_notes.txt
 scripts/test.py
+WASP.ico
+screenshots/
+img/
+icon/
+thumb_drive_content/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -32,6 +41,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+pyvenv.cfg
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
